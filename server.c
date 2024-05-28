@@ -1,14 +1,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<sys/socket.h>
+#include<sys/socket.h> //includes socket, bind, listen, accept, connect, recv, send, recvfrom, sendto, close, etc.
 #include<sys/un.h>
 #include<stdbool.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<unistd.h>
+#include<pthread.h>
 
-#define backlog 50
+#define backlog 10
+#define PORT 8080
+#define buffer 1024 //exactly one KB
 
 /* struct sockaddr_in {
     short int sin_family;   //Address Family (Ex: AF_INET)
@@ -27,7 +30,11 @@
 int main(int argc, char *argv[]) {
     struct sockaddr_in serverAddress; //sets the variable to "serverAddress" to the socket.h data type sockaddr_in, above is what the struct looks like
 
-    int ipAdd = "192.168.10.120";
+    socklen_t addrlen = sizeof(serverAddress); //socklen_t=unsigned int, size of the serverAddress struct
+
+    int clientSocket;
+
+    int ipAdd = "192.168.10.120"; //local Ipv4 address used to bind for the server/socket
 
     int socIpv4 = socket(AF_INET, SOCK_STREAM, 0); //creates the socket, socketfd = socket(domain, type, protocol);
 
@@ -35,35 +42,38 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    memset(&serverAddress, 0, sizeof(serverAddress)); //sets the struct in memory all to the value of zero
+    //next couple lines set the members of the serverAddress struct/general address structure
+    memset(&serverAddress, 0, addrlen); //sets the struct in memory all to the value of zero
 
-    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_family = AF_INET; //sets the address family
     
-    serverAddress.sin_port = htons(8080); //htons converts the int to network byte order (from the 8080 to the actual port)
+    serverAddress.sin_port = htons(PORT); //htons converts the int to network byte order (from the 8080 to the actual port)
     
     if (inet_pton(AF_INET, ipAdd, &serverAddress.sin_addr) <= 0) { //converts the text rep of Ipv4 address to the binary form, it is then stored in the serverAddress struct
+        close(socIpv4); //0 is no valid address, 1 is success, and -1 is a fail
+        exit(EXIT_FAILURE);
+    } //inet_pton(addressFamily, src, networkAddrStruct);
+
+    if(bind(socIpv4, serverAddress.sin_addr.s_addr, addrlen) == -1) { //binds the ip address to the socket so that they are synonymous
         close(socIpv4);
         exit(EXIT_FAILURE);
-    }
+    } //bind(socketfd, addr, addrlen);
 
-    
-
-    
-
-    if(bind(socIpv4, , sizeof(serverAddress)) == -1) {
-
-    }
-
-
+    if (listen(socIpv4, backlog) == -1) { //listens for the client socket
+        close(socIpv4);
+        exit(EXIT_FAILURE);
+    } //listen(socketfd, backlog);
 
     while(true) {
+        if ((clientSocket = accept(socIpv4, &serverAddress.sin_addr.s_addr, &addrlen)) < 0) { //accepts clients to the server from the listen backlog connection request list
+            perror("No clients dectected yet\n");
+            continue;
+        } //accept(socketfd, addr, addrlen);
 
-        if (listen(socIpv4, backlog) == -1) {
-            close(socIpv4);
-            EXIT_FAILURE;
-        } //listens for client socket, listen(socketfd, backlog);
+        printf("Client accepted\n");
 
-        accept(socIpv4,)
+        //coninue here next, do send and receive data for just one user before attempting multithreading or Select
+
 
     }
 
