@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 
     int clientSocket;
 
-    int ipAdd = "192.168.10.120"; //local Ipv4 address used to bind for the server/socket
+    int ipAdd = ""; //local Ipv4 address used to bind for the server/socket
 
     int socIpv4 = socket(AF_INET, SOCK_STREAM, 0); //creates the socket, socketfd = socket(domain, type, protocol);
 
