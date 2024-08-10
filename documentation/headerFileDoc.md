@@ -1,3 +1,5 @@
+##DOCS##
+
 This is comprehensive list of the header files used in this project.
 
 As well as which specific functions, variables, structs, and data structures are used under each header file.
@@ -10,6 +12,7 @@ C Standard Library (no explaination needed):
     -<stdlib.h>
     -<stdbool.h>
     -<string.h>
+    -<errno.h>
 
 POSIX Library:
     -<sys/socket.h>
@@ -93,9 +96,48 @@ POSIX Library:
 
 
 ##<unistd.h>##
-    Summary: POSIX standard header file that provides access to various POSIX OS API functions
+    Summary: POSIX standard header file that provides access to various POSIX OS API functions. Including
+    process control, sys calls, and file operations. Not all functions will be shown just the ones used in this program.
+    This is because it is a very broad header file with many functions.
+
+        Functions:
+
 
 
 ##<pthread.h>##
-    Summary:
+    Summary: POSIX standard header file that is for creating and managing threads for your Unix system. 
+    Used to make multithreaded applications with blocking calls.
+
+        Data types:
+            -'pthread_t':
+            -'pthread_attr_t':
+            -'pthread_mutex_t':
+            -'pthread_mutexattr_t':
+            -'pthread_cond_t':
+            -'pthread_condattr_t':
+            -'pthread_rwlock_t':
+            -'pthread_rwlocakattr_t':
+
+        Functions:
+            Thread Management:
+                -'pthread_create()':
+                -'pthread_join()':
+                -'pthread_exit()':
+                -'pthread_self()':
+            Mutex (Mutual exclusion):
+                -'pthread_mutex_init()':
+                -'pthread_mutex_lock()':
+                -'pthread_mutex_trylock()':
+                -'pthread_mutex_unlock()':
+                -'pthread_mutex_destroy()':
+            Condition Variable:
+                -'pthread_cond_init()':
+                -'pthread_cond_wait()':
+                -'pthread_cond_signal()':
+                -'pthread_cond_broadcast()':
+                -'pthread_cond_destroy()':
+            Read-Write Lock:
+                -'pthread_rwlock'
+
+
 
