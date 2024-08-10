@@ -5,8 +5,7 @@
 #include<stdlib.h>
 #include<stdbool.h>
 #include<string.h>
-#include<sys/socket.h> //includes socket, bind, listen, accept, connect, recv, send, recvfrom, sendto, close, etc.
-#include<sys/un.h>
+#include<sys/socket.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include<unistd.h>

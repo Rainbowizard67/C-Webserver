@@ -48,5 +48,7 @@ Key components:
 All of these components form the core of the POSIX standard, 
 forming portability across Unix or Unix like (Linux) operating systems.
 
+There are way more functions, Macros, and structures used in this project this is just an introduction.
+
 For more general POSIX information follow the link at the top.
 
