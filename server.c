@@ -51,7 +51,12 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     } //listen(socketfd, backlog);
 
-    while(true) {
+    while (true) {
+        if (listen(socIpv4, backlog) == -1) { //listens for the client socket
+        close(socIpv4);
+        exit(EXIT_FAILURE);
+        } //listen(socketfd, backlog);        
+        
         if ((clientSocket = accept(socIpv4, &serverAddress.sin_addr.s_addr, &addrlen)) < 0) { //accepts clients to the server from the listen backlog connection request list
             perror("No clients dectected yet\n");
             continue;
