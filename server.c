@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 
         printf("Client accepted\n");
 
-        //coninue here next, do send and receive data for just one user before attempting multithreading or Select
+        //TO DO, do send and receive data for just one user before attempting multithreading or Select
 
 
     }

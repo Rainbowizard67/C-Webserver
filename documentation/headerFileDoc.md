@@ -86,14 +86,8 @@ POSIX Library:
 
 ##<arpa/inet.h>##
     Summary: POSIX standard header file that provides conversion between network/host byte order on
-    different computer architecture and manipulating IP addresses. 
-
-        Functions:
-            -'
-
-
-
-
+    different computer architecture and manipulating IP addresses. All of the functions in the previous header file (netinet/in.h)
+    are in this one. No need to put them again.
 
 ##<unistd.h>##
     Summary: POSIX standard header file that provides access to various POSIX OS API functions. Including
@@ -101,6 +95,7 @@ POSIX Library:
     This is because it is a very broad header file with many functions.
 
         Functions:
+            
 
 
 
@@ -137,7 +132,11 @@ POSIX Library:
                 -'pthread_cond_broadcast()':
                 -'pthread_cond_destroy()':
             Read-Write Lock:
-                -'pthread_rwlock'
+                -'pthread_rwlock_init()':
+                -'pthread_rwlock_rdlock()':
+                -'pthread_rwlock_wrlock()':
+                -'pthread_rwlock_unlock()':
+                -'pthread_rwlock_destroy()':
 
 
 
