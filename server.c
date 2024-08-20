@@ -49,8 +49,6 @@ int main(int argc, char *argv[]) {
             continue;
         } //accept(socketfd, addr, addrlen);
 
-        printf("Client accepted\n");
-
         //TO DO, do send and receive data for just one user before attempting multithreading or Select
 
 

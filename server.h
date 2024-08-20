@@ -12,6 +12,8 @@
 #include<unistd.h>
 #include<pthread.h>
 
+#include"handleClient.h"
+
 
 // Macros and global variables
 #define backlog 10
