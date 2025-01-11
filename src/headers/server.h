@@ -18,7 +18,7 @@
 // Macros and global variables
 #define backlog 10
 #define PORT 8080 //port number
-#define buffer 1024 //exactly one KB
+#define buffer 10240 //exactly ten KBs
 
 #endif
 
