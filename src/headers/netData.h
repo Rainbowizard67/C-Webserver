@@ -3,7 +3,11 @@
 
 #include "project_headers.h"
 
+#define EXIT_MENU -1
+#define NEUTRAL 0
+#define INTERFACE_DATA 1
+#define SET_HOST_IP 2
+
 void netData_menu();
-char* get_all_interfaces();
 
 #endif

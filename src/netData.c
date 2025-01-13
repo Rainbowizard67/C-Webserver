@@ -1,5 +1,9 @@
 #include "headers/netData.h"
 
+char* setHostAddress() {
+
+}
+
 int countPrefixLen(struct in6_addr *netmask) {
     int prefix_len = 0;
 
@@ -18,7 +22,7 @@ int countPrefixLen(struct in6_addr *netmask) {
     return prefix_len;
 }
 
-char* get_all_interfaces() {    
+void get_all_interfaces(WINDOW *win) {    
     struct ifaddrs *inter, *ifa;
     int family;
     char addrv4[INET_ADDRSTRLEN];
@@ -28,6 +32,7 @@ char* get_all_interfaces() {
 
     //gets the list of all interfaces
     if(getifaddrs(&inter) == -1) {
+        endwin();
         perror("getifaddrs"); 
         exit(1);
     }
@@ -48,9 +53,9 @@ char* get_all_interfaces() {
                 snprintf(netmask, sizeof(netmask), "Unknown");
             }
             //prints interface data
-            printf("Interface...: %s\n", ifa->ifa_name);
-            printf("IPv4_Address: %s\n",addrv4);
-            printf("Subnet_mask.: %s\n\n", netmask);
+            printw("Interface...: %s\n", ifa->ifa_name);
+            printw("IPv4_Address: %s\n",addrv4);
+            printw("Subnet_mask.: %s\n\n", netmask);
         }
 
         //checks for ipv6 interface
@@ -64,22 +69,62 @@ char* get_all_interfaces() {
                 prefix_len = countPrefixLen(netmask6);
             }
             //prints interface data
-            printf("Interface...: %s\n", ifa->ifa_name);
-            printf("IPv6_Address: %s\n", addrv6);
-            printf("Prefixlen...: %d\n\n", prefix_len);
+            printw("Interface...: %s\n", ifa->ifa_name);
+            printw("IPv6_Address: %s\n", addrv6);
+            printw("Prefixlen...: %d\n\n", prefix_len);
         }
     }
+
+    refresh();
 
     freeifaddrs(inter);    
 }
 
 void netData_menu() {
+    int loopCheck=TRUE;
+
     initscr();
-    attron(A_BOLD);
-    printw("Hello, ncurses!\n");
-    refresh();
-    printw("Hello babe!\n");
-    getch();
+    attron(A_BOLD);;
+    printw("#    #   ######   #######      #       #   ######   #    #   #    #\n");
+    printw("##   #   #           #         ##     ##   #        ##   #   #    #\n");
+    printw("# #  #   ######      #         # #   # #   ######   # #  #   #    #\n");
+    printw("#  # #   #           #         #  # #  #   #        #  # #   #    #\n");
+    printw("#   ##   ######      #         #   #   #   ######   #   ##    ####\n\n\n");
+    attroff(A_BOLD);
+    while(loopCheck != FALSE) {
+        int menu_option = 0;
+        attron(A_BOLD);
+        printw("For your HTTP server please select a menu option:\n");
+        printw("1. Print host interface data    2. Set host Ip address\n");
+        attroff(A_BOLD);
+        refresh();
+        scanw("%d", &menu_option);
+        refresh();
+        switch (menu_option) {
+            case INTERFACE_DATA:
+                wclear(stdscr);
+                wrefresh(stdscr);
+                get_all_interfaces(stdscr);
+                getch();
+                sleep(0.50);
+                break;
+            case SET_HOST_IP:
+                wclear(stdscr);
+                wrefresh(stdscr);
+                setHostAddress();
+                getch();
+                sleep(0.25);
+                break;
+            case 3:
+
+            case EXIT_MENU:
+                loopCheck = FALSE;
+            default:
+                break;
+        }
+        wclear(stdscr);
+        wrefresh(stdscr);
+    }
     endwin();
 }
 
