@@ -1,6 +1,4 @@
 #include "headers/server.h"
-#include "headers/netData.h"
-
 
 int main(int argc, char *argv[]) {
     struct sockaddr_in serverAddress; //structure for server socket interface
@@ -9,7 +7,7 @@ int main(int argc, char *argv[]) {
 
     int socClient; //client socket
 
-    char ipAdd[] = get_interface(); //local Ipv4 address used to bind for the server socket
+    char ipAdd[INET6_ADDRSTRLEN] = netData_menu(); //local Ipv4 or Ipv6 address used to bind for the server socket
 
     //socket(int domain, int type, int protocol)
     int socIpv4 = socket(AF_INET, SOCK_STREAM, 0);

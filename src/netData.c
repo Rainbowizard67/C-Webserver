@@ -1,14 +1,4 @@
 #include "headers/netData.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
-
-char* selectInterface() {
-    printf("\nSelect an interface Ip address to bind for the server:\n");
-}
 
 int countPrefixLen(struct in6_addr *netmask) {
     int prefix_len = 0;
@@ -28,8 +18,7 @@ int countPrefixLen(struct in6_addr *netmask) {
     return prefix_len;
 }
 
-
-char* get_interface() {    
+char* get_all_interfaces() {    
     struct ifaddrs *inter, *ifa;
     int family;
     char addrv4[INET_ADDRSTRLEN];
@@ -81,12 +70,20 @@ char* get_interface() {
         }
     }
 
-    freeifaddrs(inter);
+    freeifaddrs(inter);    
+}
 
-    return selectInterface();    
+void netData_menu() {
+    initscr();
+    attron(A_BOLD);
+    printw("Hello, ncurses!\n");
+    refresh();
+    printw("Hello babe!\n");
+    getch();
+    endwin();
 }
 
 int main() {
-    get_interface();
+    netData_menu();
     return 0;
 }

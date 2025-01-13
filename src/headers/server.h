@@ -1,18 +1,9 @@
 #ifndef PREPROCESS_NETWORK
 #define PREPROCESS_NETWORK
 
-#include<stdio.h> //standard I/O ouput
-#include<stdlib.h> //standard C library
-#include<stdbool.h> //standard boolean library
-#include<string.h> //standard string library
-#include<errno.h>
-#include<sys/socket.h>
-#include<netinet/in.h>
-#include<arpa/inet.h>
-#include<unistd.h> //standard Unix OS library
-#include<pthread.h> //standard C thread library
-
-#include"handleClient.h"
+#include "headers/netData.h"
+#include "headers/handleClient.h"
+#include "headers/project_headers.h"
 
 
 // Macros and global variables
