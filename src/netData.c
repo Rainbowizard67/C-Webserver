@@ -1,7 +1,31 @@
 #include "headers/netData.h"
 
-char* setHostAddress() {
+char* setHostAddress(WINDOW *win) {
+    int bind_choice = 0;
+    char chosen_address[INET6_ADDRSTRLEN];
+    while(TRUE) {
+        wclear(win);
+        wrefresh(win);
+        attron(A_BOLD);
+        printw("Would you like to bind the address automatically or manually?\n");
+        printw("1. Automatically    2. Manually    3. Exit\n");
+        attroff(A_BOLD);
+        refresh();
+        scanw("%d", &bind_choice);
+        refresh();
+        switch (bind_choice) {
+            case 1: 
+                
+            case 2:
 
+            case 3:
+
+            default:
+                break;
+        }
+
+    }
+    return chosen_address;
 }
 
 int countPrefixLen(struct in6_addr *netmask) {
@@ -80,8 +104,9 @@ void get_all_interfaces(WINDOW *win) {
     freeifaddrs(inter);    
 }
 
-void netData_menu() {
+char* netData_menu() {
     int loopCheck=TRUE;
+    char selected_address[INET6_ADDRSTRLEN]; //either ipv4 or ipv6 but max size is ipv6
 
     initscr();
     attron(A_BOLD);;
@@ -106,17 +131,17 @@ void netData_menu() {
                 wrefresh(stdscr);
                 get_all_interfaces(stdscr);
                 getch();
-                sleep(0.50);
                 break;
             case SET_HOST_IP:
                 wclear(stdscr);
                 wrefresh(stdscr);
-                setHostAddress();
+                selected_address[INET6_ADDRSTRLEN] = sesetHostAddress(stdscr);
                 getch();
-                sleep(0.25);
                 break;
             case 3:
-
+                //TODO
+                //Going to add more setup menu options for user
+                break;
             case EXIT_MENU:
                 loopCheck = FALSE;
             default:
@@ -126,6 +151,7 @@ void netData_menu() {
         wrefresh(stdscr);
     }
     endwin();
+    return selected_address;
 }
 
 int main() {

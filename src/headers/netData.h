@@ -8,6 +8,6 @@
 #define INTERFACE_DATA 1
 #define SET_HOST_IP 2
 
-void netData_menu();
+char* netData_menu();
 
 #endif
