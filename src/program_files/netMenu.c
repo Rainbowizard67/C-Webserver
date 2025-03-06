@@ -1,8 +1,12 @@
-#include "headers/netData.h"
+#include "../headers/netData.h"
+
+char* getAutoAddr() {
+
+}
 
 char* setHostAddress(WINDOW *win) {
     int bind_choice = 0;
-    char chosen_address[INET6_ADDRSTRLEN];
+    char* chosen_address = malloc(INET_ADDRSTRLEN);
     while(TRUE) {
         wclear(win);
         wrefresh(win);
@@ -10,16 +14,19 @@ char* setHostAddress(WINDOW *win) {
         printw("Would you like to bind the address automatically or manually?\n");
         printw("1. Automatically    2. Manually    3. Exit\n");
         attroff(A_BOLD);
-        refresh();
         scanw("%d", &bind_choice);
         refresh();
         switch (bind_choice) {
             case 1: 
-                
+                chosen_address = getAutoAddr();
             case 2:
-
+                printw("Please input the address you wish to use for the server bind:\n");
+                scanw("%16s",chosen_address);
+                refresh();
+                break;
             case 3:
 
+                break;
             default:
                 break;
         }
@@ -106,7 +113,7 @@ void get_all_interfaces(WINDOW *win) {
 
 char* net_menu() {
     int loopCheck=TRUE;
-    char selected_address[INET6_ADDRSTRLEN]; //either ipv4 or ipv6 but max size is ipv6
+    char* selected_address = malloc(INET_ADDRSTRLEN); //either ipv4 or ipv6 but max size is ipv6
 
     initscr();
     attron(A_BOLD);;
@@ -135,7 +142,7 @@ char* net_menu() {
             case SET_HOST_IP:
                 wclear(stdscr);
                 wrefresh(stdscr);
-                selected_address[INET6_ADDRSTRLEN] = sesetHostAddress(stdscr);
+                selected_address = setHostAddress(stdscr);
                 getch();
                 break;
             case 3:

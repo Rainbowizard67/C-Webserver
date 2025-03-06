@@ -1,11 +1,18 @@
 # Makefile script to easily compile and then run program files
 
-webSrv: server.o
-	@gcc server.o -o webSrv
+CC := gcc
+LD_LIBRARY_PATH := $(shell pwd)/shared_objects
 
-server.o: server.c
-	@gcc -c server.c -o server.o
+
+mainWebSrv: 
+	C server.c -o webSrv
+
+objects: 
+	CC -fPIC -c netMenu.c handleClient.c cache.c 
+
+shared_library:
+	CC -shared -o LD_LIBRARY_PATH/libWeblib.so netMenu.o handleClient.o cache.o
 
 clean:
-	@echo "Cleared object files"
 	@rm *.o
+	@echo "Cleared object files"

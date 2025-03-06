@@ -1,9 +1,9 @@
 /*
-    Main server program, where the starting point is.
-    This is an HTTP 1.0 server written in C and is subject to changes/updates in the future.
+Main server program, where the starting point is.
+This is an HTTP 1.0 server written in C and is subject to changes/updates in the future.
 */
 
-#include "headers/server.h"
+#include "../headers/server.h"
 
 /*NOTES: 
     -macros are defined in the header file
@@ -17,10 +17,8 @@ void handle_client() {
     
 }
 
-/*
-This function populates & returns the sockaddr_in struct and binds the selected IP
-from the net_menu, as well as starting to listen on the socket pointer.
-*/
+/*This function populates & returns the sockaddr_in struct and binds the selected IP
+from the net_menu, as well as starting to listen on the socket pointer.*/
 sockaddr_in make_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
         
     sockaddr_in serverAdd; //struct for server socket interface
@@ -79,6 +77,8 @@ int main(int argc, char *argv[]) {
     }
 
     close(socServer); //closes the socket ptr
+
+    free(ip);
 
     return 0;
 }
