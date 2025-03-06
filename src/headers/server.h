@@ -1,13 +1,13 @@
 #ifndef PREPROCESS_NETWORK
 #define PREPROCESS_NETWORK
 
-#include "headers/netData.h"
-#include "headers/handleClient.h"
-#include "headers/project_headers.h"
+#include "netData.h"
+#include "handleClient.h"
+#include "project_headers.h"
 
 
 // Macros and global variables
-#define backlog 10
+#define backlog 25
 #define PORT 8080 //port number
 #define buffer 10240 //exactly ten KBs
 
