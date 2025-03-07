@@ -9,12 +9,12 @@ EXE_FINAL_PATH := $(shell pwd)/../../
 EXE_NAME = webSrv
 
 # Source and object files
-SRC := netMenu.c handleClient.c cache.c threadpool.c
+SRC := settings.c handleClient.c cache.c threadpool.c
 OBJ := $(SRC:.c=.o)
 
 # Shared library target
 LIBRARY := $(LD_LIBRARY_PATH)/libWeblib.so
-SHARED_OBJS := netMenu.o handleClient.o cache.o threadpool.o
+SHARED_OBJS := settings.o handleClient.o cache.o threadpool.o
 
 # Main program target
 mainWebSrv: $(OBJ) $(LIBRARY)

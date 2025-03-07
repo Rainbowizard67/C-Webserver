@@ -1,4 +1,4 @@
-#include "../headers/netData.h"
+#include "../headers/settings.h"
 
 char* getAutoAddr() {
 
@@ -111,17 +111,17 @@ void get_all_interfaces(WINDOW *win) {
     freeifaddrs(inter);    
 }
 
-char* net_menu() {
+char* settings_menu() {
     int loopCheck=TRUE;
     char* selected_address = malloc(INET_ADDRSTRLEN); //either ipv4 or ipv6 but max size is ipv6
 
     initscr();
     attron(A_BOLD);;
-    printw("#    #   ######   #######      #       #   ######   #    #   #    #\n");
-    printw("##   #   #           #         ##     ##   #        ##   #   #    #\n");
-    printw("# #  #   ######      #         # #   # #   ######   # #  #   #    #\n");
-    printw("#  # #   #           #         #  # #  #   #        #  # #   #    #\n");
-    printw("#   ##   ######      #         #   #   #   ######   #   ##    ####\n\n\n");
+    printw("#       #   ######   #    #   #    #\n");
+    printw("##     ##   #        ##   #   #    #\n");
+    printw("# #   # #   ######   # #  #   #    #\n");
+    printw("#  # #  #   #        #  # #   #    #\n");
+    printw("#   #   #   ######   #   ##    ####\n\n\n");
     attroff(A_BOLD);
     while(loopCheck != FALSE) {
         int menu_option = 0;
