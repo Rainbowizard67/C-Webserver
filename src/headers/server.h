@@ -7,9 +7,9 @@
 #include "threadpool.h"
 
 // Macros and global variables
-#define backlog 25
+#define BACKLOG 25
 #define PORT 8080 //port number
-#define buffer 10240 //exactly ten KBs
+#define BUFFER_LEN 10240 //exactly ten KBs
 // End Macros and global variables
 
 #endif

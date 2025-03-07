@@ -7,12 +7,13 @@
 #define HASH_SIZE 1024
 
 //doublely linked-list
-typedef struct dNode {
+typedef struct dNode dNode;
+struct dNode {
     char* key;
     void* value;
     dNode* prev;
     dNode* next;
-} dNode;
+};
 
 //hash table that is the LRU cache
 typedef struct LRUCache {

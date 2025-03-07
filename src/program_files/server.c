@@ -13,18 +13,32 @@ This is an HTTP 1.0 server written in C and is subject to changes/updates in the
 typedef struct sockaddr_in sockaddr_in;
 //end data types
 
-void handle_client() {
+void handle_client(int soc, struct sockaddr_storage client, socklen_t size) {
+    if((connect(soc, (struct sockaddr*)&client, size)) == -1) {
+        close(soc);
+        printf("webserver: Error connecting to client %s", client);
+        return;
+    }
+
+    char message[37] = "Test message hello hello hello!!!!!";
+
+    if((send(soc, message, 37, 0)) == -1) {
+        close(soc);
+        exit(EXIT_FAILURE);
+    }
 }
 
 /*This function populates & returns the sockaddr_in struct and binds the selected IP
 from the net_menu, as well as starting to listen on the socket pointer.*/
-sockaddr_in make_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
+sockaddr_in set_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
         
     sockaddr_in serverAdd; //struct for server socket interface
 
     addrlen = sizeof(serverAdd);
 
-    ipAdd = net_menu(); //local Ipv4 used to bind for the server socket
+    //ipAdd = net_menu(); //local Ipv4 used to bind for the server socket
+
+    ipAdd = "0.0.0.0";
 
     //socket(int domain, int type, int protocol)
     int socIpv4 = socket(AF_INET, SOCK_STREAM, 0);
@@ -47,28 +61,32 @@ sockaddr_in make_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
         exit(EXIT_FAILURE);
     } //bind(socketfd, addr, addrlen);
 
-    if (listen(socServ, backlog) == -1) { //listens for the client socket
+    if (listen(socServ, BACKLOG) == -1) { //listens for the client socket
         close(socServ);
         exit(EXIT_FAILURE);
-        } //listen(socketfd, backlog);
+    } //listen(socketfd, backlog);
+
+    printf("webserver: Waiting for connections on port %s and interface %s\n", PORT, ipAdd);
 
     return serverAdd;
 }
 
 int main(int argc, char *argv[]) {
     int socServer, socClient;
+    struct sockaddr_storage client_addr;
     char ip[INET_ADDRSTRLEN];
     socklen_t addrlen;
     
-    sockaddr_in server = make_server_interface(socServer, ip, addrlen); //returns the server interface
+    sockaddr_in server = set_server_interface(socServer, ip, addrlen); //returns the server interface
 
     while(true) {
-        if ((socClient = accept(socServer, (struct sockaddr*)&server, &addrlen)) < 0) { //accepts clients to the server from the listen backlog connection request list
-            perror("No clients dectected yet\n");
+        socklen_t sin_size = sizeof(client_addr);
+        if ((socClient = accept(socServer, (struct sockaddr*)&client_addr, &sin_size)) < 0) { //accepts clients to the server from the listen backlog connection request list
+            perror("webserver: No clients dectected yet\n");
             continue;
         } //accept(socketfd, addr, addrlen);
 
-        handle_client();
+        handle_client(socClient, client_addr, sin_size);
 
     }
 

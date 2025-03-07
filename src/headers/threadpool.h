@@ -9,6 +9,7 @@ typedef void (*thread_func_t)(void* arg);
 //structures
 
 //This is our singly linked list of thread functions for the queue
+typedef struct tpool_work tpool_work;
 typedef struct tpool_work {
     thread_func_t func;
     void* arg;

@@ -6,6 +6,7 @@
 #include <stdbool.h> //standard boolean library
 #include <string.h> //standard string library
 #include <errno.h>
+#include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

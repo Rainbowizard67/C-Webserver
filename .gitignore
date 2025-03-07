@@ -1,5 +1,10 @@
 # gitignore
 
+# executable name
+webSrv
+# C object files
 *.o
+# C shared library
 *.so
+# vscode settings
 *.vscode
