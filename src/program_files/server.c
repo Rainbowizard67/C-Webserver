@@ -14,7 +14,6 @@ typedef struct sockaddr_in sockaddr_in;
 //end data types
 
 void handle_client() {
-    
 }
 
 /*This function populates & returns the sockaddr_in struct and binds the selected IP
@@ -64,15 +63,12 @@ int main(int argc, char *argv[]) {
     sockaddr_in server = make_server_interface(socServer, ip, addrlen); //returns the server interface
 
     while(true) {
-
-
         if ((socClient = accept(socServer, (struct sockaddr*)&server, &addrlen)) < 0) { //accepts clients to the server from the listen backlog connection request list
             perror("No clients dectected yet\n");
             continue;
         } //accept(socketfd, addr, addrlen);
 
-        //TO DO, do send and receive data for just one user before attempting multithreading or Select
-
+        handle_client();
 
     }
 
