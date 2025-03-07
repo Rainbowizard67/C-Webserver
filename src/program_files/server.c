@@ -41,9 +41,13 @@ sockaddr_in set_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
     ipAdd = "0.0.0.0";
 
     //socket(int domain, int type, int protocol)
-    int socIpv4 = socket(AF_INET, SOCK_STREAM, 0);
+    socServ = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (socIpv4 == -1) {close(socIpv4); exit(EXIT_FAILURE);}
+    if (socServ == -1) {
+        close(socServ);
+        perror("Error creating socket FD: ");
+        exit(EXIT_FAILURE);
+    }
 
     //struct setup
     memset(&serverAdd, 0, addrlen); //sets the struct in memory all to the value of zero
@@ -52,21 +56,24 @@ sockaddr_in set_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
     serverAdd.sin_addr.s_addr = INADDR_ANY; //sets the address to any so before you actually input the real address it is assigned a zeroed input
 
     if(inet_pton(AF_INET, ipAdd, &serverAdd.sin_addr.s_addr) <= 0) { //converts the text rep of Ipv4 address to the binary form, it is then stored in the serverAdd struct
-        close(socIpv4); //0 is no valid address, 1 is success, and -1 is a fail
+        close(socServ);
+        perror("Error storing or translating address: ");
         exit(EXIT_FAILURE);
     } //inet_pton(addressFamily, src, networkAddrStruct);
 
     if(bind(socServ, (struct sockaddr *)&serverAdd, addrlen) == -1) { //binds the ip address to the socket so that they are synonymous
-        close(socIpv4);
+        close(socServ);
+        perror("Error binding server address to socket: ");
         exit(EXIT_FAILURE);
     } //bind(socketfd, addr, addrlen);
 
     if (listen(socServ, BACKLOG) == -1) { //listens for the client socket
         close(socServ);
+        perror("Error listening on server socket: ");
         exit(EXIT_FAILURE);
     } //listen(socketfd, backlog);
 
-    printf("webserver: Waiting for connections on port %s and interface %s\n", PORT, ipAdd);
+    printf("webserver: Waiting for connections on port %s\n", PORT);
 
     return serverAdd;
 }

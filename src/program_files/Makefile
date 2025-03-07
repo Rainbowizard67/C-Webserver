@@ -34,7 +34,11 @@ $(LIBRARY): $(SHARED_OBJS)
 # Runs the executable
 run:
 	@echo "Running executable..."
-	$(EXE_FINAL_PATH)/$(EXE_NAME)
+	$(EXE_FINAL_PATH)$(EXE_NAME)
+
+debug:
+	@echo "Running in debug mode..."
+	@gdb $(EXE_FINAL_PATH)$(EXE_NAME)
 
 # Cleans up shared libraries
 clean:
