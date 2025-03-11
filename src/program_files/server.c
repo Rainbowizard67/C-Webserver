@@ -64,8 +64,6 @@ int main(int argc, char *argv[]) {
         if ((socClient = accept(socServer, (struct sockaddr*)&client_addr, &sin_size)) < 0) { //accepts clients to the server from the listen backlog connection request list
             continue;
         }
-
-        handle_client(socClient, client_addr, sin_size);
     }
 
 
