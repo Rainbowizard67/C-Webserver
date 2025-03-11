@@ -5,7 +5,7 @@ CC := gcc
 CFLAGS := -fPIC
 LDFLAGS := -L$(shell pwd)/../shared_objects -lncurses
 LD_LIBRARY_PATH := $(shell pwd)/../shared_objects
-EXE_FINAL_PATH := $(shell pwd)/../bin
+EXE_FINAL_PATH := $(shell pwd)/../bin/
 EXE_NAME := webSrv
 OBJ_PATH := $(shell pwd)/../objs
 
