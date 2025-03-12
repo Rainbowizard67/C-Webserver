@@ -15,6 +15,5 @@
 #include <ifaddrs.h>
 #include <unistd.h> //standard Unix OS library
 #include <pthread.h> //standard C thread library
-#include <ncurses.h> //text based user interfaces
 
 #endif
