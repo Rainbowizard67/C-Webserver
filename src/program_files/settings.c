@@ -1,4 +1,4 @@
-#include "../headers/settings.h"
+/*#include "../headers/settings.h"
 
 char* getAutoAddr() {
 
@@ -160,3 +160,4 @@ char* settings_menu() {
     endwin();
     return selected_address;
 }
+*/

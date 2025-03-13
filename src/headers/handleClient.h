@@ -3,7 +3,7 @@
 
 #include "../headers/project_headers.h"
 
-#define BUFFER_SIZE 1040 //1 KB
+#define BUFFER_SIZE 4096 //4 KB
 
 void http_client_handler();
 

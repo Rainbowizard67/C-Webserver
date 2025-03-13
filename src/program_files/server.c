@@ -22,10 +22,10 @@ sockaddr_in set_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
     memset(&serverAdd, 0, addrlen); //sets the struct in memory all to the value of zero
     serverAdd.sin_family = AF_INET; //sets the address family
     serverAdd.sin_port = htons(PORT); //htons converts the int to network byte order (from the 8080 to the actual port)
-    serverAdd.sin_addr.s_addr = INADDR_ANY; //sets the address to any so before you actually input the real address it is assigned a zeroed input
+    //serverAdd.sin_addr.s_addr = INADDR_ANY; //sets the address to any so before you actually input the real address it is assigned a zeroed input
 
     //ipAdd = net_menu(); //local Ipv4 used to bind for the server socket
-    ipAdd = "127.0.0.1";
+    strcpy(ipAdd, "127.0.0.1");
 
     if(inet_pton(AF_INET, ipAdd, &serverAdd.sin_addr) <= 0) { //converts the text rep of Ipv4 address to the binary form, it is then stored in the serverAdd struct
         close(socServ);
@@ -45,7 +45,7 @@ sockaddr_in set_server_interface(int socServ, char* ipAdd, socklen_t addrlen) {
         exit(EXIT_FAILURE);
     } //listen(socketfd, backlog);
 
-    printf("webserver: Waiting for connections on port %d\n", PORT);
+    printf("webserver: Waiting for connections on port %d and address %s\n", PORT, ipAdd);
 
     return serverAdd;
 }
@@ -61,15 +61,21 @@ int main(int argc, char *argv[]) {
     //main program loop to accept and handle clients
     while(true) {
         socklen_t sin_size = sizeof(client_addr);
-        if ((socClient = accept(socServer, (struct sockaddr*)&client_addr, &sin_size)) < 0) { //accepts clients to the server from the listen backlog connection request list
+        socClient = accept(socServer, (struct sockaddr*)&client_addr, &sin_size); //accepts clients to the server from the listen backlog connection request list
+        if (socClient < 0) {
             continue;
         }
+
+        inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
+        printf("Accepted connection from %s\n", ip);
+
+        http_client_handler(socClient, client_addr, sin_size);
+
+        close(socClient);
     }
 
 
     close(socServer);
-
-    free(ip);
 
     return 0;
 }

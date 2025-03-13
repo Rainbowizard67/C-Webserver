@@ -2,9 +2,9 @@
 
 # Compiler and linker settings
 CC := gcc
-CFLAGS := -fPIC -I./src/headers
-LDFLAGS := -L$(shell pwd)/src/shared_objects/ -lncurses
-LD_LIBRARY_PATH := $(shell pwd)/src/shared_objects/
+CFLAGS := -fPIC -I$(shell pwd)/src/headers
+LDFLAGS := -L$(shell pwd)/src/shared_objects
+LD_LIBRARY_PATH := $(shell pwd)/src/shared_objects
 EXE_FINAL_PATH := $(shell pwd)/src/bin/
 EXE_NAME := webSrv
 OBJ_PATH := $(shell pwd)/src/objs
@@ -16,11 +16,11 @@ OBJ := $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRC))
 
 # Shared library target
 LIBRARY := $(LD_LIBRARY_PATH)/libWeblib.so
-SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/settings.o $(OBJ_PATH)/threadpool.o
+SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/threadpool.o $(OBJ_PATH)/settings.o
 
 # Main program target
 mainWebSrv: $(OBJ_PATH) $(OBJ) $(LIBRARY)
-	@$(CC) $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lncurses
+	@$(CC) $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
 	@echo "Created executable, in the project bin directory"
 
 # Compile object files from source
