@@ -10,6 +10,10 @@ EXE_NAME := webSrv
 OBJ_PATH := $(shell pwd)/src/objs
 SRC_PATH := $(shell pwd)/src/program_files
 
+# Making the obj, shared_obj, and bin directories
+dirs:
+	@mkdir -p $(OBJ_PATH) $(LD_LIBRARY_PATH) $(EXE_FINAL_PATH)
+
 # Source and object files
 SRC := $(wildcard $(SRC_PATH)/*.c)
 OBJ := $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRC))
