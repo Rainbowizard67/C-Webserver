@@ -10,10 +10,6 @@ EXE_NAME := webSrv
 OBJ_PATH := $(shell pwd)/src/objs
 SRC_PATH := $(shell pwd)/src/program_files
 
-# Making the obj, shared_obj, and bin directories
-dirs:
-	@mkdir -p $(OBJ_PATH) $(LD_LIBRARY_PATH) $(EXE_FINAL_PATH)
-
 # Source and object files
 SRC := $(wildcard $(SRC_PATH)/*.c)
 OBJ := $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRC))
@@ -24,8 +20,12 @@ SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/thread
 
 # Main program target
 mainWebSrv: $(OBJ_PATH) $(OBJ) $(LIBRARY)
-	@$(CC) $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
+	@$(CC) -g $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
 	@echo "Created executable, in the project bin directory"
+
+# Making the obj, shared_obj, and bin directories
+dirs:
+	@mkdir -p $(OBJ_PATH) $(LD_LIBRARY_PATH) $(EXE_FINAL_PATH)
 
 # Compile object files from source
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.c | $(OBJ_PATH)

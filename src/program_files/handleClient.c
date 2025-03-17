@@ -29,17 +29,16 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
 
     int bytes_sent = send(soc, message, strlen(message), 0);
 
-    if(bytes_sent == -1) {
+    if(bytes_sent < 0) {
         close(soc);
         perror("Error with sending message: ");
-        exit(EXIT_FAILURE);
+        return;
     }
 
     close(soc);
 }
 
 void http_404_response() {
-    
 }
 
 
