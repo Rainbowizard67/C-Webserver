@@ -2,6 +2,10 @@
 /*Main server program, where the starting point is.
 This is an HTTP 1.0 server written in C and is subject to changes/updates in the future.*/
 
+
+void make_daemon() {
+    //this function will not be created/worked on until most of the other 
+}
 //This function populates & returns the sockaddr_in struct and binds the selected IP from the net_menu, as well as starting to listen on the socket pointer.
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;

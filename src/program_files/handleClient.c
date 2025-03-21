@@ -2,43 +2,38 @@
 
 // static function prototypes
 static void parse_HTTP_request(const char* request, int soc);
-static void get_HTTP_request(int soc);
+static int get_HTTP_request(int soc, char* URL);
 static void http_404_response();
 // end static function prototypes
 
 void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size) {
-    
-    //This is the keep alive option so that the connection stays open
-    int enable = 1;
-    if(setsockopt(soc, SOL_SOCKET, SO_KEEPALIVE, &enable, sizeof(enable)) < 0) {
-        perror("Error setting socket option: ");
-        return;
-    }
 
     //This is the timeout for the send and recv sections
     //we are going to move this later when we understand our program more
-    struct timeval timeout;
+    /*struct timeval timeout;
     timeout.tv_sec = 10; //seconds
     timeout.tv_usec = 0; //microseconds
     setsockopt(soc, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-    setsockopt(soc, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
+    setsockopt(soc, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));*/
 
     while(true) {
 
-        char* recv_buffer = (char*)malloc(BUFFER_SIZE * sizeof(char));
+        char* recv_buffer = (char*)malloc(MAX_BUFFER_SIZE * sizeof(char));
 
         if(recv_buffer == NULL) {
             perror("Error allocating memory: ");
             return;
         }
 
-        int bytes_read = recv(soc, recv_buffer, BUFFER_SIZE, 0);
+        int bytes_read = recv(soc, recv_buffer, MAX_BUFFER_SIZE, 0);
         if(bytes_read == -1) {
             perror("Error receving client request: ");
+            free(recv_buffer);
             return;
         }
         if(bytes_read == 0) {
             printf("Client closed the connection\n");
+            free(recv_buffer);
             return;
         }
         printf("Received request:\n%s\n", recv_buffer);
@@ -81,7 +76,8 @@ static void parse_HTTP_request(const char* request, int soc) {
 
     //body data can be dynamically allocated with the content-length in some of the HTTP methods
     if(strcmp(method, "GET") == 0) {
-        get_HTTP_request(soc);
+        get_HTTP_request(soc, url);
+        return;
     }
     else if(strcmp(method, "POST") == 0) {
 
@@ -109,27 +105,43 @@ static void parse_HTTP_request(const char* request, int soc) {
     }
 }
 
-static void get_HTTP_request(int soc) {
-    char* message = 
-    "HTTP/1.1 200 OK\r\n"
-    "Content-Type: text/html\r\n"
-    "Connection: keep-alive\r\n"
-    "\r\n"
-    "<html>\n"
-    "<head><titl>Hello mom!</title></head>\n"
-    "<body>\n"
-    "<h1>Hello, family!</h1>\n"
-    "</body>\n"
-    "</html>\n";
+static int get_HTTP_request(int soc, char* URL) {
+    file_data_t* fd = file_load("/home/alexrob67/C-Webserver/src/web_pages/example.html");
 
-    int bytes_sent = send(soc, message, strlen(message), 0);
-
-    if(bytes_sent < 0) {
-        close(soc);
-        perror("Error with sending message: ");
-        return;
+    if(fd == NULL) {
+        return -1;
     }
 
+    char* message = (char*)malloc(fd->size + MAX_BUFFER_SIZE);
+
+    if(message == NULL) {
+        file_free(fd);
+        return -1;
+    }
+
+    int header_len = snprintf(message, MAX_BUFFER_SIZE,
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: %d\r\n"
+        "Connection: Keep-Alive\r\n"
+        "\r\n", 
+        fd->size);
+    
+    memcpy(message + header_len, fd->data, fd->size);
+
+    file_free(fd);
+
+    int bytes_sent = send(soc, message, header_len + fd->size, 0);
+
+    if(bytes_sent < 0) {        
+        perror("Error with sending message: ");
+        free(message);
+        return -1;
+    }
+
+    free(message);
+
+    return 0;    
 }
 
 
