@@ -13,14 +13,15 @@
 |
 ===================================================*/
 
-void handle_sigstp(int sig) {    
-    printf("\nwebserver: Paused program and now a background process\n");
-}
-
-void handle_sigint(int sig) {
-    printf("\nwebserver: Exiting program...\n");
-    //needs to add a free/close function so that all open sockets or memory is closed before the program fully exits 
-    exit(EXIT_SUCCESS);
+void handle_sig(int sig) {
+    if(sig == SIGINT) {
+        printf("\nwebserver: Exiting program...\n");
+        //needs to add a free/close function so that all open sockets or memory is closed before the program fully exits 
+        exit(EXIT_SUCCESS);
+    }
+    else if(sig == SIGTSTP) {
+        printf("\nwebserver: Paused program and now a background process\n");
+    }
 }
 
 void make_daemon() {
@@ -77,8 +78,8 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
 int main(int argc, char *argv[]) {
     //program signals
-    signal(SIGINT, handle_sigint);
-    signal(SIGTSTP, handle_sigstp);
+    signal(SIGINT, handle_sig);
+    signal(SIGTSTP, handle_sig);
     //end program signals
     
     int socClient; 
