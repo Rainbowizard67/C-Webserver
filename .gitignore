@@ -8,6 +8,3 @@ webSrv
 *.so
 # vscode settings
 *.vscode
-# web pages
-*.html
-*.css

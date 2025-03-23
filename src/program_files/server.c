@@ -1,10 +1,30 @@
 #include "../headers/server.h"
-/*Main server program, where the starting point is.
-This is an HTTP 1.0 server written in C and is subject to changes/updates in the future.*/
+/*===================================================
+| This program is a web server written in C, and a  |                             
+| front end Golang terminal interface. More details |
+| are below for this file:                          |
+|
+|
+|
+|
+|
+|
+|
+|
+===================================================*/
 
+void handle_sigstp(int sig) {    
+    printf("\nwebserver: Paused program and now a background process\n");
+}
+
+void handle_sigint(int sig) {
+    printf("\nwebserver: Exiting program...\n");
+    //needs to add a free/close function so that all open sockets or memory is closed before the program fully exits 
+    exit(EXIT_SUCCESS);
+}
 
 void make_daemon() {
-    //this function will not be created/worked on until most of the other 
+    //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
 }
 //This function populates & returns the sockaddr_in struct and binds the selected IP from the net_menu, as well as starting to listen on the socket pointer.
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
@@ -56,6 +76,11 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 }
 
 int main(int argc, char *argv[]) {
+    //program signals
+    signal(SIGINT, handle_sigint);
+    signal(SIGTSTP, handle_sigstp);
+    //end program signals
+    
     int socClient; 
     struct sockaddr_storage client_addr;
     char ip[INET_ADDRSTRLEN];
@@ -73,7 +98,7 @@ int main(int argc, char *argv[]) {
         }
 
         inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
-        printf("Accepted connection from %s\n", ip);
+        printf("webserver: accepted connection from %s\n", ip);
 
         http_client_handler(socClient, client_addr, sin_size);
 
