@@ -10,6 +10,7 @@
 //Macros and global variables
 #define BACKLOG 25
 #define PORT 8080 //port number
+#define INIT_TPOOL_NUM 10
 
 typedef struct sockaddr_in sockaddr_in;
 //End Macros and global variables

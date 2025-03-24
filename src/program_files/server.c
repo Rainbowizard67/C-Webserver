@@ -89,6 +89,8 @@ int main(int argc, char *argv[]) {
     
     int socServer = set_server_interface(ip, addrlen); //returns the server interface
 
+    tpool_t* main_tpool = tpool_create(INIT_TPOOL_NUM);
+
     //main program loop to accept and handle clients
     while(true) {
         socklen_t sin_size = sizeof(client_addr);
@@ -101,10 +103,16 @@ int main(int argc, char *argv[]) {
         inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
         printf("webserver: accepted connection from %s\n", ip);
 
-        http_client_handler(socClient, client_addr, sin_size);
+        if(!(tpool_add_work(main_tpool, http_client_handler, socClient, client_addr, sin_size))) {
+           perror("Error with client_handler or t_pool: ");
+        }
+
+        //http_client_handler(socClient, client_addr, sin_size);
 
         close(socClient);
     }
+
+    tpool_destroy(main_tpool);
 
     close(socServer);
 

@@ -32,7 +32,6 @@ typedef struct tpool tpool_t;
 
 //end structures
 
-
 //function prototypes
 tpool_t* tpool_create(size_t num);
 void tpool_destroy(tpool_t* tm);

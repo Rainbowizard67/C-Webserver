@@ -106,15 +106,13 @@ static void parse_HTTP_request(const char* request, int soc) {
 }
 
 static int get_HTTP_request(int soc, char* URL) {
-    char* get_URL;
+    char* get_URL = (char*)malloc(MAX_URL_SIZE * sizeof(char));
 
-    if((strcmp(URL, "\\")) == 0) {
+    if((strcmp(URL, "/")) == 0) {
         get_URL = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
     }
 
     file_data_t* fd = file_load(get_URL);
-    
-    free(get_URL);
 
     if(fd == NULL) {
         return -1;
