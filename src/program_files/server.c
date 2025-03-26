@@ -27,6 +27,42 @@ void handle_sig(int sig) {
 void make_daemon() {
     //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
 }
+
+void set_nonblocking(int sock) {
+    int flags = fcntl(sock, F_GETFL, 0);
+    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+}
+
+void main_event_loop(int epoll_fd, int server_soc) {
+    struct epoll_event events[MAX_EVENTS];
+    
+    
+    //client socket
+    int socClient; 
+    char ip[INET_ADDRSTRLEN];
+    //end client socket  
+    
+    
+    
+    while(true) {
+        int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        if(num_events < 0) {
+            perror("Error epoll_wait: ");
+            exit(EXIT_FAILURE);
+        }
+
+        for(int i=0; i<num_events; i++) {
+            if(events[i].data.fd ==server_soc) {
+                struct sockaddr_storage client_addr;
+                socklen_t addrlen = sizeof(client_addr);
+                int client_soc = 
+                
+
+            }
+        }
+    }
+}
+
 //This function populates & returns the sockaddr_in struct and binds the selected IP from the net_menu, as well as starting to listen on the socket pointer.
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;
@@ -43,6 +79,10 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
         perror("Error creating socket FD: ");
         exit(EXIT_FAILURE);
     }
+
+    //socket option to allow address reuse
+    int opt=1;
+    setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     //struct setup
     memset(&serverAdd, 0, addrlen); //sets the struct in memory all to the value of zero
@@ -71,6 +111,8 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
         exit(EXIT_FAILURE);
     } //listen(socketfd, backlog);
 
+    set_nonblocking(socServ);
+
     printf("webserver: Waiting for connections on port %d and address %s\n", PORT, ipAdd);
 
     return socServ;
@@ -82,14 +124,28 @@ int main(int argc, char *argv[]) {
     signal(SIGTSTP, handle_sig);
     //end program signals
     
-    int socClient; 
-    struct sockaddr_storage client_addr;
+    //server socket init
     char ip[INET_ADDRSTRLEN];
-    socklen_t addrlen;
-    
+    socklen_t addrlen;    
     int socServer = set_server_interface(ip, addrlen); //returns the server interface
+    //end server socket init
 
-    tpool_t* main_tpool = tpool_create(INIT_TPOOL_NUM);
+    struct epoll_event ev;
+    int epoll_fd = epoll_create1(0);
+    if(epoll_fd < 0) {
+        perror("Error creating epoll: ");
+        close(socServer);
+        exit(EXIT_FAILURE);
+    }
+    ev.events = EPOLLIN;
+    ev.data.fd = socServer;
+    if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socServer, &ev) < 0) {
+        perror("Error adding socket to epoll: ");
+        exit(EXIT_FAILURE);
+    }
+
+
+    //tpool_t* main_tpool = tpool_create(INIT_TPOOL_NUM);
 
     //main program loop to accept and handle clients
     while(true) {
@@ -103,18 +159,17 @@ int main(int argc, char *argv[]) {
         inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
         printf("webserver: accepted connection from %s\n", ip);
 
-        if(!(tpool_add_work(main_tpool, http_client_handler, socClient, client_addr, sin_size))) {
-           perror("Error with client_handler or t_pool: ");
-        }
 
-        //http_client_handler(socClient, client_addr, sin_size);
+
+        http_client_handler(socClient, client_addr, sin_size);
 
         close(socClient);
     }
 
-    tpool_destroy(main_tpool);
+    //tpool_destroy(main_tpool);
 
     close(socServer);
+    close(epoll_fd);
 
     return 0;
 }
