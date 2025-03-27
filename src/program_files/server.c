@@ -51,7 +51,7 @@ void set_nonblocking(int sock) {
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 }
 
-void main_event_loop(int epoll_fd, int server_soc) {
+void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN]; 
     
@@ -183,8 +183,11 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    main_event_loop(epoll_fd, socServer);
+    tpool_t* tp = tpool_create(INIT_TPOOL_NUM);
 
+    main_event_loop(epoll_fd, socServer, tp);
+
+    tpool_destroy(tp);
     close(socServer);
     close(epoll_fd);
 
