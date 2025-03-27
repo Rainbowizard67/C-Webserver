@@ -1,13 +1,21 @@
 #include "../headers/server.h"
-/*===================================================
-| This program is a web server written in C, and a  |                             
-| front end Golang terminal interface. More details |
-| are below for this file:                          |
+/*=======================================================================================
+| This program is a web server written in C, and a                            
+| front end Golang terminal interface. More details 
+| are below for this file:                          
 |
+| Functions:
+|   -handle_sig(int sig)
+|       ##Defines how the two main stp and int signals will work with the server##
+|   -make_daemon(void)
+|       ##Makes the program into a systemd daemon after it is registered##
+|   -parse_args()
+|   -set_nonblocking(int sock)
+|   -main_event_loop(int epoll_fd, int server_soc)
+|   -set_server_interface(char* ipAdd, socklen_t addrlen)
+|   -main()
 |
-|
-|
-|
+| Relevant headers and information:
 |
 |
 |
@@ -24,8 +32,18 @@ void handle_sig(int sig) {
     }
 }
 
-void make_daemon() {
+void make_daemon(void) {
     //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
+}
+
+bool parse_args(int* argc, char* argv[]) {
+    if(*argc > 10) {
+        printf("webserver: too many args\n");
+        return false;
+    }
+    
+    
+    return true;
 }
 
 void set_nonblocking(int sock) {
@@ -142,6 +160,8 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, handle_sig);
     signal(SIGTSTP, handle_sig);
     //end program signals
+
+    if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}    
     
     //server socket init
     char ip[INET_ADDRSTRLEN];
