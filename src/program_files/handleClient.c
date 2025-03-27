@@ -27,7 +27,7 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
 
         int bytes_read = recv(soc, recv_buffer, MAX_BUFFER_SIZE, 0);
         if(bytes_read == -1) {
-            perror("Error receving client request: ");
+            perror("Error receiving client request: ");
             free(recv_buffer);
             return;
         }
