@@ -35,14 +35,7 @@ void set_nonblocking(int sock) {
 
 void main_event_loop(int epoll_fd, int server_soc) {
     struct epoll_event events[MAX_EVENTS];
-    
-    
-    //client socket
-    int socClient; 
-    char ip[INET_ADDRSTRLEN];
-    //end client socket  
-    
-    
+    char ip[INET_ADDRSTRLEN]; 
     
     while(true) {
         int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
@@ -52,12 +45,38 @@ void main_event_loop(int epoll_fd, int server_soc) {
         }
 
         for(int i=0; i<num_events; i++) {
-            if(events[i].data.fd ==server_soc) {
+            if(events[i].data.fd == server_soc) {
                 struct sockaddr_storage client_addr;
-                socklen_t addrlen = sizeof(client_addr);
-                int client_soc = 
-                
+                socklen_t client_len = sizeof(client_addr);
+                int client_soc = accept(server_soc, (struct sockaddr*)&client_addr, &client_len);
+                if(client_soc < 0) {
+                    perror("Error with accepting client: ");
+                    continue;
+                }
 
+                inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
+                printf("webserver: accepted connection from %s\n", ip);
+
+                set_nonblocking(client_soc);
+
+                struct epoll_event ev;
+                ev.data.fd = client_soc;
+                ev.events = EPOLLIN | EPOLLET;
+
+                if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_soc, &ev) < 0) {
+                    perror("Error with with adding client socket to events: ");
+                    close(client_soc);
+                    exit(EXIT_FAILURE);
+                }             
+            }
+            else {
+                struct sockaddr_storage client;
+                socklen_t client_len = sizeof(client);
+                
+                getpeername(events[i].data.fd, (struct sockaddr*)&client, &client_len); //gets connected client info
+                
+                http_client_handler(events[i].data.fd, client, client_len);
+                close(events[i].data.fd);
             }
         }
     }
@@ -144,29 +163,7 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-
-    //tpool_t* main_tpool = tpool_create(INIT_TPOOL_NUM);
-
-    //main program loop to accept and handle clients
-    while(true) {
-        socklen_t sin_size = sizeof(client_addr);
-        socClient = accept(socServer, (struct sockaddr*)&client_addr, &sin_size); //accepts clients to the server from the listen backlog connection request list
-        if (socClient < 0) {
-            perror("Error accepting connections: ");
-            continue;
-        }
-
-        inet_ntop(client_addr.ss_family, &((struct sockaddr_in*)&client_addr)->sin_addr, ip, INET_ADDRSTRLEN);
-        printf("webserver: accepted connection from %s\n", ip);
-
-
-
-        http_client_handler(socClient, client_addr, sin_size);
-
-        close(socClient);
-    }
-
-    //tpool_destroy(main_tpool);
+    main_event_loop(epoll_fd, socServer);
 
     close(socServer);
     close(epoll_fd);
