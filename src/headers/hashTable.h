@@ -6,15 +6,20 @@
 //structs
 typedef struct LNode {
     char* key;
-    char* value;
+    void* value;
     struct LNode* next;
+    struct LNode* prev;
 }LNode_t;
 
-typedef struct hashMap {
+typedef struct hashTable {
     int num_elements;
     int capacity;
-    LNode_t arr;
-}hashMap_t;
+    struct LNode_t* buckets;
+}hashTable_t;
 //end structs
+
+//function prototypes
+
+//end function prototypes
 
 #endif

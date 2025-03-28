@@ -2,31 +2,22 @@
 #define LRU_CACHE
 
 #include "project_headers.h"
+#include "hashMap.h"
 
-//1kb
-#define HASH_SIZE 1024
-
-//doublely linked-list
-typedef struct dNode dNode;
-struct dNode {
-    char* key;
-    void* value;
-    dNode* prev;
-    dNode* next;
-};
+#define HASH_SIZE 1024 //1KB
 
 //hash table that is the LRU cache
 typedef struct LRUCache {
     int capacity; //max size of cache
     int size; //current size of cache
-    dNode** hastTable;
-    dNode* head;
-    dNode* tail;
+    LNode_t** hastTable;
+    LNode_t* head;
+    LNode_t* tail;
 } LRUCache;
 
 //function prototypes
 size_t hash();
-dNode* createNode();
+LNode_t* createNode();
 LRUCache* createCache();
 void moveToHead();
 void removeTail();
