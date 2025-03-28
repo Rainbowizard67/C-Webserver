@@ -14,12 +14,16 @@ typedef struct LNode {
 typedef struct hashTable {
     int num_elements;
     int capacity;
-    struct LNode_t* buckets;
+    LNode_t** buckets;
 }hashTable_t;
 //end structs
 
 //function prototypes
-
+hashTable_t* create_table(int size);
+void insert(hashTable_t* tb, char* key, char* val, int size);
+void del(hashTable_t* tb, char* key, int size);
+char* search(hashTable_t* tb, char* key, int size);
+void free_table(hashTable_t* tb, int size);
 //end function prototypes
 
 #endif

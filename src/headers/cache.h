@@ -2,7 +2,7 @@
 #define LRU_CACHE
 
 #include "project_headers.h"
-#include "hashMap.h"
+#include "hashTable.h"
 
 #define HASH_SIZE 1024 //1KB
 
@@ -13,15 +13,10 @@ typedef struct LRUCache {
     LNode_t** hastTable;
     LNode_t* head;
     LNode_t* tail;
-} LRUCache;
+}LRUCache_t;
 
 //function prototypes
-size_t hash();
-LNode_t* createNode();
-LRUCache* createCache();
-void moveToHead();
-void removeTail();
-int get();
-int put();
+
+//end function prototypes
 
 #endif
