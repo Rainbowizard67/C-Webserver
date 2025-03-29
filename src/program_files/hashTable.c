@@ -11,9 +11,10 @@ static size_t hash_function(char* key, int size) {
 }
 
 hashTable_t* create_table(int size) {
-    hashTable_t* tb = (hashTable_t*)(sizeof(hashTable_t));
+    hashTable_t* tb = (hashTable_t*)malloc(sizeof(hashTable_t));
     if(!tb) return NULL;
     memset(tb->buckets, 0, size);
+    tb->capacity = size;
     return tb;
 }
 
@@ -27,8 +28,8 @@ static LNode_t* create_node(char* key, char* val) {
     return newNode;
 }
 
-void insert(hashTable_t* tb, char* key, char* val, int size) {
-    size_t index = hash_function(key, size);
+void insert(hashTable_t* tb, char* key, char* val) {
+    size_t index = hash_function(key, tb->capacity);
     LNode_t* newNode = create_node(key, val);
     if(!newNode) return;
     newNode->next = tb->buckets[index];
@@ -44,8 +45,8 @@ static void free_node(LNode_t* node) {
     free(node);
 }
 
-void del(hashTable_t* tb, char* key, int size) {
-    size_t index = hash_function(key, size);
+void del(hashTable_t* tb, char* key) {
+    size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
     while(node) {
         if(strcmp(node->key, key) == 0) {
@@ -65,8 +66,8 @@ void del(hashTable_t* tb, char* key, int size) {
     }
 }
 
-char* search(hashTable_t* tb, char* key, int size) {
-    size_t index = hash_function(key, size);
+char* search(hashTable_t* tb, char* key) {
+    size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
     while(node) {
         if(strcmp(node->key, key) == 0) {
@@ -77,8 +78,8 @@ char* search(hashTable_t* tb, char* key, int size) {
     return NULL;
 }
 
-void free_table(hashTable_t* tb, int size) {
-    for(int i=0; i<size; i++) {
+void free_table(hashTable_t* tb) {
+    for(int i=0; i<tb->capacity; i++) {
         LNode_t* node = tb->buckets[i];
         while(node) {
             LNode_t* temp = node;

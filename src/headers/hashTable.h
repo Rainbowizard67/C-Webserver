@@ -12,7 +12,6 @@ typedef struct LNode {
 }LNode_t;
 
 typedef struct hashTable {
-    int num_elements;
     int capacity;
     LNode_t** buckets;
 }hashTable_t;
@@ -20,10 +19,10 @@ typedef struct hashTable {
 
 //function prototypes
 hashTable_t* create_table(int size);
-void insert(hashTable_t* tb, char* key, char* val, int size);
-void del(hashTable_t* tb, char* key, int size);
-char* search(hashTable_t* tb, char* key, int size);
-void free_table(hashTable_t* tb, int size);
+void insert(hashTable_t* tb, char* key, char* val);
+void del(hashTable_t* tb, char* key);
+char* search(hashTable_t* tb, char* key);
+void free_table(hashTable_t* tb);
 //end function prototypes
 
 #endif
