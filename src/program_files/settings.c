@@ -1,5 +1,5 @@
-/*#include "../headers/settings.h"
-
+#include "../headers/settings.h"
+/*
 char* getAutoAddr() {
 
 }
@@ -163,3 +163,6 @@ char* settings_menu() {
 */
 
 
+static const cyaml_schema_value_t yaml_settings_parser() {
+    return NULL;
+}

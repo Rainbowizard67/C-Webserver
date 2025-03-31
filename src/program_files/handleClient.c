@@ -15,9 +15,10 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
     timeout.tv_usec = 0; //microseconds
     setsockopt(soc, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
     setsockopt(soc, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));*/
+    hashTable_t* cache_table = create_table(MAX_CACHE_SIZE); 
 
     while(true) {
-
+        
         char* recv_buffer = (char*)malloc(MAX_BUFFER_SIZE * sizeof(char));
 
         if(recv_buffer == NULL) {
@@ -34,7 +35,7 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
         if(bytes_read == 0) {
             printf("Client closed the connection\n");
             free(recv_buffer);
-            return;
+            break;
         }
         printf("Received request:\n%s\n", recv_buffer);
 
@@ -42,10 +43,29 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
 
         free(recv_buffer);
     }
+    
+    free_table(cache_table);
 }
 
-static void http_404_response() {
+static void http_404_response(void) {
+    char* file_404 = (char*)malloc(MAX_URL_SIZE * sizeof(char));
+    file_404 = "/home/alexrob67/C-Webserver/src/web_pages/example_404.html";
+
+    if(get_file == NULL) {
+        free(get_file);
+        http_404_response();
+        return -1;
+    }
     
+    char* message = (char*)malloc(fd->size + MAX_BUFFER_SIZE);
+
+    if(message == NULL) {
+        return;
+    }
+
+    
+
+
 }
 
 static void parse_HTTP_request(const char* request, int soc) {
@@ -106,15 +126,29 @@ static void parse_HTTP_request(const char* request, int soc) {
 }
 
 static int get_HTTP_request(int soc, char* URL) {
-    char* get_URL = (char*)malloc(MAX_URL_SIZE * sizeof(char));
+    char* get_file = NULL;
 
     if((strcmp(URL, "/")) == 0) {
-        get_URL = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
+        get_file = (char*)malloc(MAX_URL_SIZE * sizeof(char));
+        get_file = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
+    }
+    else {
+        get_file = (char*)malloc((strlen(URL)) * sizeof(char));
+        strcpy(get_file, URL);
     }
 
-    file_data_t* fd = file_load(get_URL);
+    if(get_file == NULL) {
+        free(get_file);
+        http_404_response();
+        return -1;
+    }
+
+    file_data_t* fd = file_load(get_file);
+
+    free(get_file);
 
     if(fd == NULL) {
+        file_free(fd);
         return -1;
     }
 
