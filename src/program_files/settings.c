@@ -163,6 +163,6 @@ char* settings_menu() {
 */
 
 
-static const cyaml_schema_value_t yaml_settings_parser() {
-    return NULL;
-}
+/*static const cyaml_schema_value_t yaml_settings_parser() {
+    //TODO
+}*/

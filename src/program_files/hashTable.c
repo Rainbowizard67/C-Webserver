@@ -13,23 +13,39 @@ static size_t hash_function(char* key, int size) {
 hashTable_t* create_table(int size) {
     hashTable_t* tb = (hashTable_t*)malloc(sizeof(hashTable_t));
     if(!tb) return NULL;
-    memset(tb->buckets, 0, size);
+    tb->buckets = (LNode_t**)malloc(sizeof(LNode_t*) * size);
+    if(!tb->buckets) {
+        free(tb);
+        return NULL;
+    }
+    memset(tb->buckets, 0, sizeof(LNode_t*) * size);
     tb->capacity = size;
     return tb;
 }
 
-static LNode_t* create_node(char* key, char* val) {
+static LNode_t* create_node(char* key, void* val) {
     LNode_t* newNode = (LNode_t*)malloc(sizeof(LNode_t));
     if(!newNode) return NULL;
     newNode->key = strdup(key);
-    newNode->value = strdup(val);
+    newNode->value = val;
     newNode->prev = NULL;
     newNode->next = NULL;
     return newNode;
 }
 
-void insert(hashTable_t* tb, char* key, char* val) {
+void insert(hashTable_t* tb, char* key, void* val) {
     size_t index = hash_function(key, tb->capacity);
+    LNode_t* node = tb->buckets[index];
+
+    while(node) {
+        if(strcmp(node->key, key) == 0) {
+            free(node->value);
+            node->value = val;
+            return;
+        }
+        node = node->next;
+    }
+    
     LNode_t* newNode = create_node(key, val);
     if(!newNode) return;
     newNode->next = tb->buckets[index];
@@ -84,6 +100,7 @@ void free_table(hashTable_t* tb) {
         while(node) {
             LNode_t* temp = node;
             node = node->next;
+            temp->key;
             free_node(temp);
         }
     }

@@ -3,7 +3,7 @@
 // static function prototypes
 static void parse_HTTP_request(const char* request, int soc);
 static int get_HTTP_request(int soc, char* URL);
-static void http_404_response();
+static void http_404_response(int soc);
 // end static function prototypes
 
 void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size) {
@@ -47,25 +47,44 @@ void http_client_handler(int soc, struct sockaddr_storage client, socklen_t size
     free_table(cache_table);
 }
 
-static void http_404_response(void) {
-    char* file_404 = (char*)malloc(MAX_URL_SIZE * sizeof(char));
-    file_404 = "/home/alexrob67/C-Webserver/src/web_pages/example_404.html";
+static void http_404_response(int soc) {
+    char* file_404 = "/home/alexrob67/C-Webserver/src/web_pages/example_404.html";
 
-    if(get_file == NULL) {
-        free(get_file);
-        http_404_response();
-        return -1;
+    file_data_t* fd = file_load(file_404);
+
+    if(fd == NULL) {
+        file_free(fd);
+        return;
     }
-    
+       
     char* message = (char*)malloc(fd->size + MAX_BUFFER_SIZE);
 
     if(message == NULL) {
+        file_free(fd);
         return;
     }
 
+    int header_len = snprintf(message, MAX_BUFFER_SIZE,
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: %d\r\n"
+        "Connection: Keep-Alive\r\n"
+        "\r\n", 
+        fd->size);
     
+    memcpy(message + header_len, fd->data, fd->size);
 
+    file_free(fd);
 
+    int bytes_sent = send(soc, message, header_len + fd->size, 0);
+
+    if(bytes_sent < 0) {        
+        perror("Error with sending message: ");
+        free(message);
+        return;
+    }
+
+    free(message);
 }
 
 static void parse_HTTP_request(const char* request, int soc) {
@@ -127,39 +146,43 @@ static void parse_HTTP_request(const char* request, int soc) {
 
 static int get_HTTP_request(int soc, char* URL) {
     char* get_file = NULL;
+    const char* default_path = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
 
     if((strcmp(URL, "/")) == 0) {
-        get_file = (char*)malloc(MAX_URL_SIZE * sizeof(char));
-        get_file = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
+        get_file = strdup(default_path);
     }
     else {
-        get_file = (char*)malloc((strlen(URL)) * sizeof(char));
-        strcpy(get_file, URL);
+        get_file = (char*)malloc(strlen(URL) * sizeof(char) + 1);
+        if(get_file) strcpy(get_file, URL);
     }
 
-    if(get_file == NULL) {
-        free(get_file);
-        http_404_response();
-        return -1;
-    }
+    if(get_file == NULL) return -1;
 
     file_data_t* fd = file_load(get_file);
 
     free(get_file);
 
-    if(fd == NULL) {
-        file_free(fd);
+    if(!fd || !fd->data) {
+        http_404_response(soc);
         return -1;
     }
 
-    char* message = (char*)malloc(fd->size + MAX_BUFFER_SIZE);
+    int header_len = snprintf(NULL, 0, 
+        "HTTP/1.1 200 OK\r\n"
+        "Content-Type: text/html\r\n"
+        "Content-Length: %d\r\n"
+        "Connection: Keep-Alive\r\n"
+        "\r\n", 
+        fd->size);
+
+    char* message = (char*)malloc(fd->size + header_len + 1);
 
     if(message == NULL) {
         file_free(fd);
         return -1;
     }
 
-    int header_len = snprintf(message, MAX_BUFFER_SIZE,
+    snprintf(message, header_len + 1,
         "HTTP/1.1 200 OK\r\n"
         "Content-Type: text/html\r\n"
         "Content-Length: %d\r\n"
@@ -169,17 +192,17 @@ static int get_HTTP_request(int soc, char* URL) {
     
     memcpy(message + header_len, fd->data, fd->size);
 
-    file_free(fd);
-
     int bytes_sent = send(soc, message, header_len + fd->size, 0);
 
     if(bytes_sent < 0) {        
         perror("Error with sending message: ");
         free(message);
+        file_free(fd);
         return -1;
     }
 
     free(message);
+    file_free(fd);
 
     return 0;    
 }
