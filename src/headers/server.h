@@ -1,7 +1,6 @@
 #ifndef PREPROCESS_NETWORK
 #define PREPROCESS_NETWORK
 
-#include <signal.h>
 #include "settings.h"
 #include "handleClient.h"
 #include "project_headers.h"

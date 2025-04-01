@@ -15,6 +15,7 @@
 #include <ifaddrs.h>
 #include <sys/epoll.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <unistd.h> //standard Unix OS library
 #include <pthread.h> //standard C thread library
 

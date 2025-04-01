@@ -21,16 +21,8 @@
 |
 ===================================================*/
 
-void handle_sig(int sig) {
-    if(sig == SIGINT) {
-        printf("\nwebserver: Exiting program...\n");
-        //needs to add a free/close function so that all open sockets or memory is closed before the program fully exits 
-        exit(EXIT_SUCCESS);
-    }
-    else if(sig == SIGTSTP) {
-        printf("\nwebserver: Paused program and now a background process\n");
-    }
-}
+//signal check
+volatile sig_atomic_t stop;
 
 void make_daemon(void) {
     //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
@@ -46,6 +38,10 @@ bool parse_args(int* argc, char* argv[]) {
     return true;
 }
 
+void handle_sigint(int sig) {
+    stop = 1;
+}
+
 void set_nonblocking(int sock) {
     int flags = fcntl(sock, F_GETFL, 0);
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
@@ -53,12 +49,16 @@ void set_nonblocking(int sock) {
 
 void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
     struct epoll_event events[MAX_EVENTS];
-    char ip[INET_ADDRSTRLEN]; 
+    char ip[INET_ADDRSTRLEN];
     
-    while(true) {
+    while(!stop) {
         int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        
         if(num_events < 0) {
-            perror("Error epoll_wait: ");
+            if(errno == EINTR) {
+                continue;
+            }
+            perror("Error with epoll_wait: ");
             exit(EXIT_FAILURE);
         }
 
@@ -98,9 +98,9 @@ void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
             }
         }
     }
+    printf("\nwebserver: exiting program...\n");
 }
 
-//This function populates & returns the sockaddr_in struct and binds the selected IP from the net_menu, as well as starting to listen on the socket pointer.
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;
 
@@ -156,10 +156,8 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 }
 
 int main(int argc, char *argv[]) {
-    //program signals
-    signal(SIGINT, handle_sig);
-    signal(SIGTSTP, handle_sig);
-    //end program signals
+
+    signal(SIGINT, handle_sigint);
 
     if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}    
     
@@ -191,5 +189,6 @@ int main(int argc, char *argv[]) {
     close(socServer);
     close(epoll_fd);
 
+    printf("bye");
     return 0;
 }
