@@ -24,7 +24,6 @@
 
 //Start State machine
 typedef enum conn_state_t {
-    STATE_ACCEPT,
     STATE_READ,
     STATE_PARSE,
     STATE_HANDLE,

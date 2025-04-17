@@ -46,7 +46,7 @@ void set_nonblocking(int sock) {
 }
 
 #pragma region main_event_loop
-void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
+void main_event_loop(int epoll_fd, int server_soc) {
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN];
     
@@ -93,13 +93,9 @@ void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
 
                 request->client_socket = events[i].data.fd;
 
-                if(!(tpool_add_work(tp, (thread_func_t)http_client_handler, request))) {
-                    perror("Error with adding work to tpool: ");
-                    free(request);
-                    close(events[i].data.fd);
-                    exit(EXIT_FAILURE);
-                }
+                request->state = STATE_READ;
 
+                http_client_handler(request);
             }
         }
     }
@@ -187,19 +183,8 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    tpool_t* tp = tpool_create(INIT_TPOOL_NUM);
+    main_event_loop(epoll_fd, socServer);
 
-    if(tp == NULL) {
-        printf("Error, over max thread count for pool\n");
-        tpool_destroy(tp);
-        close(socServer);
-        close(epoll_fd);
-        exit(EXIT_FAILURE);
-    }
-
-    main_event_loop(epoll_fd, socServer, tp);
-
-    tpool_destroy(tp);
     close(socServer);
     close(epoll_fd);
 
