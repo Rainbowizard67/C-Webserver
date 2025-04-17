@@ -19,12 +19,34 @@
 #include <unistd.h> //standard Unix OS library
 #include <pthread.h> //standard C thread library
 
-//Start structures
+#define MAX_BUFFER_SIZE 4096
+#define MAX_URL_SIZE 256
+
+//Start State machine
+typedef enum conn_state_t {
+    STATE_ACCEPT,
+    STATE_READ,
+    STATE_PARSE,
+    STATE_HANDLE,
+    STATE_WRITE,
+    STATE_CLOSE
+}conn_state_t;
+
 typedef struct client_request_t {
     int client_socket;
     struct sockaddr_storage client_addr;
     socklen_t client_len;
+    conn_state_t state;
+    char buffer[MAX_BUFFER_SIZE];
+    size_t buffer_len;
+    char method[16];
+    char path[MAX_URL_SIZE];
+    char response[BUFSIZ];
+    size_t response_len;
+    size_t bytes_sent;
 }client_request_t;
-//End structures
+
+//End State machine
+
 
 #endif

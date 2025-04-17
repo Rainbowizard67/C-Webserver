@@ -8,33 +8,41 @@ static void http_404_response(int soc);
 
 void http_client_handler(client_request_t* request) {
 
-    hashTable_t* cache_table = create_table(MAX_CACHE_SIZE); 
+    hashTable_t* cache_table = create_table(MAX_CACHE_SIZE);
+
+    if(!cache_table) {
+        perror("Error creating cache table: ");
+        close(request->client_socket);
+        free(request);
+        exit(EXIT_FAILURE);
+    }
 
     while(true) {
-        
-        char* recv_buffer = (char*)malloc(MAX_BUFFER_SIZE * sizeof(char));
-
-        if(recv_buffer == NULL) {
-            perror("Error allocating memory: ");
-            break;
+        switch(request->state) {
+            case STATE_READ: {
+                int bytes_read = recv(request->client_socket, request->buffer, MAX_BUFFER_SIZE, 0);
+                if(bytes_read == -1) {
+                    perror("Error receiving client request: ");
+                    request->state = STATE_CLOSE;
+                }
+                else if(bytes_read == 0) {
+                    printf("Client closed the connection\n");
+                    request->state = STATE_CLOSE;
+                }
+                else {
+                    request->buffer[bytes_read] = '\0';
+                    printf("Received request:\n%s\n", request->buffer);
+                    request->state = STATE_PARSE;
+                }
+                break;
+            }
+            case STATE_PARSE:
+                parse_HTTP_request(request->buffer, request->client_socket);
+                request->state = STATE_CLOSE;
+                break;
+            case STATE_CLOSE:
+                break;
         }
-
-        int bytes_read = recv(request->client_socket, recv_buffer, MAX_BUFFER_SIZE, 0);
-        if(bytes_read == -1) {
-            perror("Error receiving client request: ");
-            free(recv_buffer);
-            break;
-        }
-        if(bytes_read == 0) {
-            printf("Client closed the connection\n");
-            free(recv_buffer);
-            break;
-        }
-        printf("Received request:\n%s\n", recv_buffer);
-
-        parse_HTTP_request(recv_buffer, request->client_socket);
-
-        free(recv_buffer);
     }
     
     close(request->client_socket);

@@ -5,8 +5,6 @@
 | are below for this file:                          
 |
 | Functions:
-|   -handle_sig(int sig)
-|       ##Defines how the two main stp and int signals will work with the server##
 |   -make_daemon(void)
 |       ##Makes the program into a systemd daemon after it is registered##
 |   -parse_args()
@@ -47,6 +45,7 @@ void set_nonblocking(int sock) {
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 }
 
+#pragma region main_event_loop
 void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN];
@@ -106,6 +105,7 @@ void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
     }
     printf("\nwebserver: exiting program...\n");
 }
+#pragma endregion
 
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;
@@ -192,7 +192,7 @@ int main(int argc, char *argv[]) {
     if(tp == NULL) {
         printf("Error, over max thread count for pool\n");
         tpool_destroy(tp);
-        cloes(socServer);
+        close(socServer);
         close(epoll_fd);
         exit(EXIT_FAILURE);
     }
