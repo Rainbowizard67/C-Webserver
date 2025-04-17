@@ -86,6 +86,10 @@ static void* tpool_worker(void* arg) {
 
 //function to create the entire thread pool
 tpool_t* tpool_create(size_t num) {
+    if(num > 15) {
+        return NULL;
+    }
+    
     tpool_t* tm;
     pthread_t thread;
     size_t i;

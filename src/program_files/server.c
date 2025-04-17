@@ -88,13 +88,19 @@ void main_event_loop(int epoll_fd, int server_soc, tpool_t* tp) {
                 }             
             }
             else {
-                struct sockaddr_storage client;
-                socklen_t client_len = sizeof(client);
-                
-                getpeername(events[i].data.fd, (struct sockaddr*)&client, &client_len); //gets connected client info
-                
-                http_client_handler(events[i].data.fd, client, client_len);
-                close(events[i].data.fd);
+                client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
+
+                getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len); //gets connected client info
+
+                request->client_socket = events[i].data.fd;
+
+                if(!(tpool_add_work(tp, (thread_func_t)http_client_handler, request))) {
+                    perror("Error with adding work to tpool: ");
+                    free(request);
+                    close(events[i].data.fd);
+                    exit(EXIT_FAILURE);
+                }
+
             }
         }
     }
@@ -182,6 +188,14 @@ int main(int argc, char *argv[]) {
     }
 
     tpool_t* tp = tpool_create(INIT_TPOOL_NUM);
+
+    if(tp == NULL) {
+        printf("Error, over max thread count for pool\n");
+        tpool_destroy(tp);
+        cloes(socServer);
+        close(epoll_fd);
+        exit(EXIT_FAILURE);
+    }
 
     main_event_loop(epoll_fd, socServer, tp);
 

@@ -19,4 +19,12 @@
 #include <unistd.h> //standard Unix OS library
 #include <pthread.h> //standard C thread library
 
+//Start structures
+typedef struct client_request_t {
+    int client_socket;
+    struct sockaddr_storage client_addr;
+    socklen_t client_len;
+}client_request_t;
+//End structures
+
 #endif
