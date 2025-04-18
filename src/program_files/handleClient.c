@@ -28,8 +28,13 @@ void http_client_handler(client_request_t* request) {
                 break;
             }
             case STATE_PARSE:
-                parse_HTTP_request(request->buffer, request->client_socket);
-                request->state = STATE_READ;
+                bool check = parse_HTTP_request(request->buffer, request->client_socket);
+                if(!bool) {
+                    request->state = STATE_CLOSE;
+                }
+                else {
+                    request->state = STATE_READ;
+                }
                 break;
             case STATE_CLOSE:
                 running = false;
