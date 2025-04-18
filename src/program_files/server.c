@@ -45,7 +45,6 @@ void set_nonblocking(int sock) {
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 }
 
-#pragma region main_event_loop
 void main_event_loop(int epoll_fd, int server_soc) {
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN];
@@ -101,7 +100,6 @@ void main_event_loop(int epoll_fd, int server_soc) {
     }
     printf("\nwebserver: exiting program...\n");
 }
-#pragma endregion
 
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;

@@ -1,23 +1,14 @@
 #include "../headers/handleClient.h"
 
 // static function prototypes
-static void parse_HTTP_request(const char* request, int soc);
+static bool parse_HTTP_request(const char* request, int soc);
 static int get_HTTP_request(int soc, char* URL);
 static void http_404_response(int soc);
 // end static function prototypes
 
 void http_client_handler(client_request_t* request) {
-
-    hashTable_t* cache_table = create_table(MAX_CACHE_SIZE);
-
-    if(!cache_table) {
-        perror("Error creating cache table: ");
-        close(request->client_socket);
-        free(request);
-        exit(EXIT_FAILURE);
-    }
-
-    while(true) {
+    bool running = true;
+    while(running) {
         switch(request->state) {
             case STATE_READ: {
                 int bytes_read = recv(request->client_socket, request->buffer, MAX_BUFFER_SIZE, 0);
@@ -38,16 +29,16 @@ void http_client_handler(client_request_t* request) {
             }
             case STATE_PARSE:
                 parse_HTTP_request(request->buffer, request->client_socket);
-                request->state = STATE_CLOSE;
+                request->state = STATE_READ;
                 break;
             case STATE_CLOSE:
+                running = false;
                 break;
         }
     }
     
     close(request->client_socket);
     free(request);
-    free_table(cache_table);
 }
 
 static void http_404_response(int soc) {
@@ -90,7 +81,7 @@ static void http_404_response(int soc) {
     free(message);
 }
 
-static void parse_HTTP_request(const char* request, int soc) {
+static bool parse_HTTP_request(const char* request, int soc) {
     char method[10] = {0}, url[1024] = {0}, version[20] = {0};
     
     if(sscanf(request, "%9s %1023s %19s", method, url, version) != 3) {
