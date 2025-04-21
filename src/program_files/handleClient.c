@@ -29,7 +29,7 @@ void http_client_handler(client_request_t* request) {
             }
             case STATE_PARSE:
                 bool check = parse_HTTP_request(request->buffer, request->client_socket);
-                if(!bool) {
+                if(!check) {
                     request->state = STATE_CLOSE;
                 }
                 else {
@@ -91,7 +91,7 @@ static bool parse_HTTP_request(const char* request, int soc) {
     
     if(sscanf(request, "%9s %1023s %19s", method, url, version) != 3) {
         printf("Invalid request line\n");
-        return;
+        return false;
     }
 
     const char* headers = strstr(request, "\r\n");
@@ -115,7 +115,7 @@ static bool parse_HTTP_request(const char* request, int soc) {
     //body data can be dynamically allocated with the content-length in some of the HTTP methods
     if(strcmp(method, "GET") == 0) {
         get_HTTP_request(soc, url);
-        return;
+        return true;
     }
     else if(strcmp(method, "POST") == 0) {
 

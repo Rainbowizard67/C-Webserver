@@ -1,4 +1,8 @@
 #include "../headers/settings.h"
 
-//TODO, this needs to interopt with the golang terminal interface for settings
+struct handler_settings {
+    const char* doc_root;
+    const char* default_path;
+    bool keep_alive;
 
+};

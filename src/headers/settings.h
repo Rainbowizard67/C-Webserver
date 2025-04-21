@@ -5,6 +5,6 @@
 #include "hashTable.h"
 #include "project_headers.h"
 
-
+typedef struct handler_settings handler_settings;
 
 #endif
