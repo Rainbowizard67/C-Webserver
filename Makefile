@@ -20,7 +20,7 @@ SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/thread
 
 # Main program target
 mainWebSrv: dirs $(OBJ_PATH) $(OBJ) $(LIBRARY)
-	@$(CC) -g $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
+	@$(CC) -g $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lcyaml -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
 	@echo "Created executable, in the project bin directory"
 
 # Making the obj, shared_obj, and bin directories

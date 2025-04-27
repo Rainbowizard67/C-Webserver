@@ -1,15 +1,15 @@
 #include "../headers/settings.h"
 
 //Start structure settings
-static struct handler_settings {
-    const char* doc_root;
-    const char* default_path;
-    bool keep_alive;
+struct handler_settings {
+    char* doc_root;
+    char* default_path;
+    unsigned short* keep_alive;
 };
 
 typedef struct handler_settings handler_settings_t;
 
-static struct network_settings {
+struct network_settings {
     unsigned short* port_number;
     char ipv4_address[16];
     unsigned short* backlog;
@@ -31,7 +31,7 @@ static const cyaml_schema_field_t ns_fields_schema[] = {
 static const cyaml_schema_field_t hs_fields_schema[] = {
     CYAML_FIELD_STRING_PTR("Doc_Root", CYAML_FLAG_POINTER, handler_settings_t, doc_root, 0, CYAML_UNLIMITED),
     CYAML_FIELD_STRING_PTR("Default_Path", CYAML_FLAG_POINTER, handler_settings_t, default_path, 0, CYAML_UNLIMITED),
-    CYAML_FIELD_BOOL("Keep_Alive", CYAML_FLAG_DEFAULT, handler_settings_t, keep_alive),
+    CYAML_FIELD_UINT_PTR("Keep_Alive", CYAML_FLAG_DEFAULT, handler_settings_t, keep_alive),
 };
 
 static const cyaml_schema_value_t schema = {
@@ -54,6 +54,7 @@ static hashTable_t* init_hashtable(network_settings_t* ns, handler_settings_t* h
     return ht;
 }
 
+//Loads yaml
 static hashTable_t* load_yaml(network_settings_t* ns, handler_settings_t* hs, char* filepath) {
     const cyaml_config_t config = {
         .log_fn = cyaml_log,
@@ -77,17 +78,21 @@ static hashTable_t* load_yaml(network_settings_t* ns, handler_settings_t* hs, ch
     return htable;
 }
 
+//General settings function that starts initialization of everything
 hashTable_t* settings(void) {
     network_settings_t* ns_settings = (network_settings_t*)malloc(sizeof(network_settings_t));
     handler_settings_t* hs_settings = (handler_settings_t*)malloc(sizeof(handler_settings_t));
 
-    char* filepath;
-
+    char filepath[MAX_FILEPATH_SIZE];
+    printf("Input configuration file path: ");
+    scanf("%s", filepath);    
+    
     hashTable_t* hs = load_yaml(ns_settings, hs_settings, filepath);
 
     return hs;
 }
 
-void* get_setting() {
-
+//Wrapper function to make output look better using settings data
+void* get_value(hashTable_t* ht, char* key) {
+    return search(ht, key);
 }
