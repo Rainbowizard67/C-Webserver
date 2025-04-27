@@ -157,6 +157,8 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
 int main(int argc, char *argv[]) {
 
+    hashTable_t* ht = main_settings();
+
     signal(SIGINT, handle_sigint);
 
     if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}    
@@ -185,6 +187,8 @@ int main(int argc, char *argv[]) {
 
     close(socServer);
     close(epoll_fd);
+
+    free_settings(ht);
 
     printf("bye");
     return 0;

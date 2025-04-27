@@ -1,1 +1,11 @@
 ---
+Network:
+  Port_Number: 8080
+  IPv4_Address: "127.0.0.1"
+  Backlog: 50
+  Max_Events: 1024
+
+Handler:
+  Doc_Root: "/var/www"
+  Default_Path: "/index.html"
+  Keep_Alive: 1
