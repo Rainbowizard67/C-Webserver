@@ -82,7 +82,7 @@ void del(hashTable_t* tb, char* key) {
     }
 }
 
-char* search(hashTable_t* tb, char* key) {
+void* search(hashTable_t* tb, char* key) {
     size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
     while(node) {
