@@ -92,6 +92,23 @@ void main_event_loop(int epoll_fd, int server_soc) {
     printf("\nwebserver: exiting program...\n");
 }
 
+int set_epoll_events(struct epoll_event ev, int socServer) {
+    int epoll_fd = epoll_create1(0);
+    if(epoll_fd < 0) {
+        perror("Error creating epoll: ");
+        close(socServer);
+        exit(EXIT_FAILURE);
+    }
+    ev.events = EPOLLIN;
+    ev.data.fd = socServer;
+    if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socServer, &ev) < 0) {
+        perror("Error adding socket to epoll: ");
+        exit(EXIT_FAILURE);
+    }
+
+    return epoll_fd;
+}
+
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;
 
@@ -146,6 +163,11 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
     return socServ;
 }
 
+void clean_program(int ep_fd, int soc) {
+    close(soc);
+    close(ep_fd);
+}
+
 int main(int argc, char *argv[]) {
 
     signal(SIGINT, handle_sigint);
@@ -154,30 +176,22 @@ int main(int argc, char *argv[]) {
     
     //hashTable_t* ht = main_settings(argv[0]);
     
-    //server socket init
+    //Start server socket init (returns socket fd)
     char ip[INET_ADDRSTRLEN];
     socklen_t addrlen;    
-    int socServer = set_server_interface(ip, addrlen); //returns the server interface
-    //end server socket init
+    int socServer = set_server_interface(ip, addrlen);
+    //End server socket init
 
+    //Start Epoll events init
     struct epoll_event ev;
-    int epoll_fd = epoll_create1(0);
-    if(epoll_fd < 0) {
-        perror("Error creating epoll: ");
-        close(socServer);
-        exit(EXIT_FAILURE);
-    }
-    ev.events = EPOLLIN;
-    ev.data.fd = socServer;
-    if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socServer, &ev) < 0) {
-        perror("Error adding socket to epoll: ");
-        exit(EXIT_FAILURE);
-    }
+    int epoll_fd = set_epoll_events(ev, socServer);
+    //End Epoll events init
 
+    //Start main program
     main_event_loop(epoll_fd, socServer);
 
-    close(socServer);
-    close(epoll_fd);
+    clean_program(epoll_fd, socServer);
+    //End main program
 
     printf("bye");
     return 0;
