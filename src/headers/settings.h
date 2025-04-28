@@ -7,7 +7,9 @@
 
 #define MAX_FILEPATH_SIZE 256
 
-hashTable_t* main_settings(void);
+#define HT_SIZE 7
+
+hashTable_t* main_settings(char* fp);
 void* get_value(hashTable_t* ht, char* key);
 void free_settings(hashTable_t* ht);
 

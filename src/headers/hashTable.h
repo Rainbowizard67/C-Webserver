@@ -3,8 +3,6 @@
 
 #include "project_headers.h"
 
-#define HT_SIZE 7
-
 //structs
 typedef struct LNode {
     char* key;

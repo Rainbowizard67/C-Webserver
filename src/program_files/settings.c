@@ -91,7 +91,7 @@ static hashTable_t* load_yaml(char* filepath) {
 }
 
 //General settings function that starts initialization of everything
-hashTable_t* main_settings(void) {
+hashTable_t* main_settings(char* fp) {
 
     char* filepath = "/home/alexrob67/C-Webserver/config/wsconfig.yaml";
     

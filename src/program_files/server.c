@@ -5,15 +5,6 @@
 | are below for this file:                          
 |
 | Functions:
-|   -make_daemon(void)
-|       ##Makes the program into a systemd daemon after it is registered##
-|   -parse_args()
-|   -set_nonblocking(int sock)
-|   -main_event_loop(int epoll_fd, int server_soc)
-|   -set_server_interface(char* ipAdd, socklen_t addrlen)
-|   -main()
-|
-| Relevant headers and information:
 |
 |
 |
@@ -27,7 +18,7 @@ void make_daemon(void) {
 }
 
 bool parse_args(int* argc, char* argv[]) {
-    if(*argc > 10) {
+    if(*argc > 2) {
         printf("webserver: too many args\n");
         return false;
     }
@@ -157,11 +148,11 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
 int main(int argc, char *argv[]) {
 
-    hashTable_t* ht = main_settings();
-
     signal(SIGINT, handle_sigint);
 
-    if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}    
+    if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}
+    
+    //hashTable_t* ht = main_settings(argv[0]);
     
     //server socket init
     char ip[INET_ADDRSTRLEN];
@@ -187,8 +178,6 @@ int main(int argc, char *argv[]) {
 
     close(socServer);
     close(epoll_fd);
-
-    free_settings(ht);
 
     printf("bye");
     return 0;
