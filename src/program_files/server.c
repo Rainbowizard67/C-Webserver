@@ -40,6 +40,7 @@ void set_nonblocking(int sock) {
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
 }
 
+//Main listening loop and accepting loop for clients
 void main_event_loop(int epoll_fd, int server_soc) {
     tpool_t* tp = tpool_create(MAX_POOL_SIZE);
     struct epoll_event events[MAX_EVENTS];
@@ -110,6 +111,7 @@ void main_event_loop(int epoll_fd, int server_soc) {
     printf("\nwebserver: exiting program...\n");
 }
 
+//Creates the multiplexing event structure on the server interface
 int set_epoll_events(struct epoll_event ev, int socServer) {
     int epoll_fd = epoll_create1(0);
     if(epoll_fd < 0) {
@@ -127,6 +129,7 @@ int set_epoll_events(struct epoll_event ev, int socServer) {
     return epoll_fd;
 }
 
+//Sets the server interface (ip, port, and socket)
 int set_server_interface(char* ipAdd, socklen_t addrlen) {
     int socServ;
 
