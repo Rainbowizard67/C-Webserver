@@ -194,13 +194,14 @@ void clean_program(int ep_fd, int soc, hashTable_t* ht) {
     close(ep_fd);
 }
 
+//Main function
 int main(int argc, char *argv[]) {
 
     signal(SIGINT, handle_sigint);
 
     if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}
     
-    //hashTable_t* ht = main_settings(argv[1]);
+    hashTable_t* ht = main_settings(argv[1]);
     
     //Start server socket init (returns socket fd)
     char ip[INET_ADDRSTRLEN];

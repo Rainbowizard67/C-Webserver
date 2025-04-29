@@ -56,14 +56,14 @@ static const cyaml_schema_value_t schema = {
 static hashTable_t* init_hashtable(settings_t* s) {
     hashTable_t* ht = create_table(HT_SIZE);
     
-    insert(ht, "doc_root", s->handler->doc_root);
-    insert(ht, "default_path", s->handler->default_path);
-    insert(ht, "keep_alive", s->handler->keep_alive);
+    insert(ht, "doc_root", s->handler->doc_root, sizeof(s->handler->doc_root));
+    insert(ht, "default_path", s->handler->default_path, sizeof(s->handler->default_path));
+    insert(ht, "keep_alive", s->handler->keep_alive, sizeof(s->handler->keep_alive));
     
-    insert(ht, "port_number", s->network->port_number);
-    insert(ht, "ipv4_address", s->network->ipv4_address);
-    insert(ht, "backlog", s->network->backlog);
-    insert(ht, "max_events", s->network->max_events);
+    insert(ht, "port_number", s->network->port_number, sizeof(s->network->port_number));
+    insert(ht, "ipv4_address", s->network->ipv4_address, sizeof(s->network->ipv4_address));
+    insert(ht, "backlog", s->network->backlog, sizeof(s->network->backlog));
+    insert(ht, "max_events", s->network->max_events, sizeof(s->network->max_events));
 
     return ht;
 }
