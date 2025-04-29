@@ -31,10 +31,12 @@ bool parse_args(int* argc, char* argv[]) {
     return true;
 }
 
+//Handling Ctrl+C (stopping the server in the terminal)
 void handle_sigint(int sig) {
     stop = 1;
 }
 
+//Sets the socket to nonblocking mode so that the program does not pause during I/O
 void set_nonblocking(int sock) {
     int flags = fcntl(sock, F_GETFL, 0);
     fcntl(sock, F_SETFL, flags | O_NONBLOCK);
@@ -184,6 +186,7 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
     return socServ;
 }
 
+//Freeing settings data, multiplexing event (epoll), and server interface
 void clean_program(int ep_fd, int soc, hashTable_t* ht) {
     //free_settings(ht);
     
