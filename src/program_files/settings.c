@@ -28,7 +28,7 @@ typedef struct settings settings_t;
 //Start CYAML schema settings and format
 static const cyaml_schema_field_t ns_fields_schema[] = {
     CYAML_FIELD_UINT_PTR("Port_Number", CYAML_FLAG_POINTER, network_settings_t, port_number),
-    CYAML_FIELD_STRING("IPv4_Address", CYAML_FLAG_POINTER, network_settings_t, ipv4_address, 0),
+    CYAML_FIELD_STRING("IPv4_Address", CYAML_FLAG_DEFAULT, network_settings_t, ipv4_address, 0),
     CYAML_FIELD_UINT_PTR("Backlog", CYAML_FLAG_POINTER, network_settings_t, backlog),
     CYAML_FIELD_UINT_PTR("Max_Events", CYAML_FLAG_POINTER, network_settings_t, max_events),
     CYAML_FIELD_END
@@ -37,13 +37,13 @@ static const cyaml_schema_field_t ns_fields_schema[] = {
 static const cyaml_schema_field_t hs_fields_schema[] = {
     CYAML_FIELD_STRING_PTR("Doc_Root", CYAML_FLAG_POINTER, handler_settings_t, doc_root, 0, CYAML_UNLIMITED),
     CYAML_FIELD_STRING_PTR("Default_Path", CYAML_FLAG_POINTER, handler_settings_t, default_path, 0, CYAML_UNLIMITED),
-    CYAML_FIELD_UINT_PTR("Keep_Alive", CYAML_FLAG_DEFAULT, handler_settings_t, keep_alive),
+    CYAML_FIELD_UINT_PTR("Keep_Alive", CYAML_FLAG_POINTER, handler_settings_t, keep_alive),
     CYAML_FIELD_END
 };
 
 static const cyaml_schema_field_t setting_fields_schema[] = {
-    CYAML_FIELD_MAPPING("Network", CYAML_FLAG_DEFAULT, settings_t, network, ns_fields_schema),
-    CYAML_FIELD_MAPPING("Handler", CYAML_FLAG_DEFAULT, settings_t, handler, hs_fields_schema),
+    CYAML_FIELD_MAPPING("Network", CYAML_FLAG_POINTER, settings_t, network, ns_fields_schema),
+    CYAML_FIELD_MAPPING("Handler", CYAML_FLAG_POINTER, settings_t, handler, hs_fields_schema),
     CYAML_FIELD_END
 };
 
@@ -59,6 +59,7 @@ static hashTable_t* init_hashtable(settings_t* s) {
     insert(ht, "doc_root", s->handler->doc_root);
     insert(ht, "default_path", s->handler->default_path);
     insert(ht, "keep_alive", s->handler->keep_alive);
+    
     insert(ht, "port_number", s->network->port_number);
     insert(ht, "ipv4_address", s->network->ipv4_address);
     insert(ht, "backlog", s->network->backlog);
@@ -81,11 +82,13 @@ static hashTable_t* load_yaml(char* filepath) {
 
     if(err != CYAML_OK) {fprintf(stderr, "CYAML load error: %s\n", cyaml_strerror(err)); exit(EXIT_FAILURE);};
 
+    if(s == NULL) {fprintf(stderr, "CYAML failed: settings pointer is NULL\n"); exit(EXIT_FAILURE);}
+
     hashTable_t* htable = init_hashtable(s);
 
-    err = cyaml_free(&config, &schema, s, 0);
+    //err = cyaml_free(&config, &schema, s, 0);
 
-    if(err != CYAML_OK) {fprintf(stderr, "CYAML load error: %s\n", cyaml_strerror(err)); exit(EXIT_FAILURE);};
+    if(err != CYAML_OK) {fprintf(stderr, "CYAML free error: %s\n", cyaml_strerror(err)); exit(EXIT_FAILURE);};
 
     return htable;
 }
@@ -94,6 +97,8 @@ static hashTable_t* load_yaml(char* filepath) {
 hashTable_t* main_settings(char* fp) {
 
     char* filepath = "/home/alexrob67/C-Webserver/config/wsconfig.yaml";
+
+    if(access(filepath, F_OK) != 0) {printf("Error config file does not exist!\n"); exit(EXIT_FAILURE);}
     
     return load_yaml(filepath);
 }

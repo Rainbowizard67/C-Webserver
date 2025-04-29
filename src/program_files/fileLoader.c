@@ -12,7 +12,7 @@ file_data_t* file_load(char* filename) {
     }
 
     //Making sure it is a regular file
-    if(!(buf.st_mode & S_IFREG)) return NULL;
+    if(!(buf.st_mode & __S_IFREG)) return NULL;
 
     FILE* fp = fopen(filename, "rb");
 

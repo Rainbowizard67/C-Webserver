@@ -22,7 +22,10 @@ bool parse_args(int* argc, char* argv[]) {
         printf("webserver: too many args\n");
         return false;
     }
-    
+    /*if(sizeof(argv[1]) > MAX_FILEPATH_SIZE) {
+        printf("webserver: over max string size\n");
+        return false;
+    }*/
     
     return true;
 }
@@ -163,7 +166,9 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
     return socServ;
 }
 
-void clean_program(int ep_fd, int soc) {
+void clean_program(int ep_fd, int soc, hashTable_t* ht) {
+    //free_settings(ht);
+    
     close(soc);
     close(ep_fd);
 }
@@ -174,7 +179,7 @@ int main(int argc, char *argv[]) {
 
     if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}
     
-    //hashTable_t* ht = main_settings(argv[0]);
+    //hashTable_t* ht = main_settings(argv[1]);
     
     //Start server socket init (returns socket fd)
     char ip[INET_ADDRSTRLEN];
@@ -190,7 +195,7 @@ int main(int argc, char *argv[]) {
     //Start main program
     main_event_loop(epoll_fd, socServer);
 
-    clean_program(epoll_fd, socServer);
+    clean_program(epoll_fd, socServer, NULL);
     //End main program
 
     printf("bye");

@@ -2,6 +2,7 @@
 #define FILE_LOADER
 
 #include "project_headers.h"
+#include <sys/stat.h>
 
 //struct
 typedef struct file_data {
