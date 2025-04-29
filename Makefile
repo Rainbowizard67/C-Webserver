@@ -46,6 +46,10 @@ debug: $(EXE_FINAL_PATH)$(EXE_NAME)
 	@echo "Running in debug mode..."
 	@gdb $(EXE_FINAL_PATH)$(EXE_NAME)
 
+valgrind: $(EXE_FINAL_PATH)$(EXE_NAME)
+	@echo "Running in memory checker mode..."
+	@valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all $(EXE_FINAL_PATH)$(EXE_NAME)
+
 # Cleans up shared libraries, exe, and objs
 clean:
 	@rm -f $(LIBRARY)

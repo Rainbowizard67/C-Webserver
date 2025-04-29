@@ -188,7 +188,7 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
 //Freeing settings data, multiplexing event (epoll), and server interface
 void clean_program(int ep_fd, int soc, hashTable_t* ht) {
-    //free_settings(ht);
+    free_settings(ht);
     
     close(soc);
     close(ep_fd);

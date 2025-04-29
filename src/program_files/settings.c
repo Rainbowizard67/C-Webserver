@@ -2,18 +2,18 @@
 
 //Start structure settings
 struct handler_settings {
-    char* doc_root;
-    char* default_path;
-    unsigned short* keep_alive;
+    char doc_root[MAX_FILEPATH_SIZE];
+    char default_path[MAX_FILEPATH_SIZE];
+    unsigned short keep_alive;
 };
 
 typedef struct handler_settings handler_settings_t;
 
 struct network_settings {
-    unsigned short* port_number;
+    unsigned short port_number;
     char ipv4_address[16];
-    unsigned short* backlog;
-    unsigned short* max_events;
+    unsigned short backlog;
+    unsigned short max_events;
 };
 
 typedef struct network_settings network_settings_t;
@@ -27,17 +27,17 @@ typedef struct settings settings_t;
 
 //Start CYAML schema settings and format
 static const cyaml_schema_field_t ns_fields_schema[] = {
-    CYAML_FIELD_UINT_PTR("Port_Number", CYAML_FLAG_POINTER, network_settings_t, port_number),
+    CYAML_FIELD_UINT("Port_Number", CYAML_FLAG_DEFAULT, network_settings_t, port_number),
     CYAML_FIELD_STRING("IPv4_Address", CYAML_FLAG_DEFAULT, network_settings_t, ipv4_address, 0),
-    CYAML_FIELD_UINT_PTR("Backlog", CYAML_FLAG_POINTER, network_settings_t, backlog),
-    CYAML_FIELD_UINT_PTR("Max_Events", CYAML_FLAG_POINTER, network_settings_t, max_events),
+    CYAML_FIELD_UINT("Backlog", CYAML_FLAG_DEFAULT, network_settings_t, backlog),
+    CYAML_FIELD_UINT("Max_Events", CYAML_FLAG_DEFAULT, network_settings_t, max_events),
     CYAML_FIELD_END
 };
 
 static const cyaml_schema_field_t hs_fields_schema[] = {
-    CYAML_FIELD_STRING_PTR("Doc_Root", CYAML_FLAG_POINTER, handler_settings_t, doc_root, 0, CYAML_UNLIMITED),
-    CYAML_FIELD_STRING_PTR("Default_Path", CYAML_FLAG_POINTER, handler_settings_t, default_path, 0, CYAML_UNLIMITED),
-    CYAML_FIELD_UINT_PTR("Keep_Alive", CYAML_FLAG_POINTER, handler_settings_t, keep_alive),
+    CYAML_FIELD_STRING("Doc_Root", CYAML_FLAG_POINTER, handler_settings_t, doc_root, 0),
+    CYAML_FIELD_STRING("Default_Path", CYAML_FLAG_POINTER, handler_settings_t, default_path, 0),
+    CYAML_FIELD_UINT("Keep_Alive", CYAML_FLAG_DEFAULT, handler_settings_t, keep_alive),
     CYAML_FIELD_END
 };
 
@@ -56,14 +56,14 @@ static const cyaml_schema_value_t schema = {
 static hashTable_t* init_hashtable(settings_t* s) {
     hashTable_t* ht = create_table(HT_SIZE);
     
-    insert(ht, "doc_root", s->handler->doc_root, sizeof(s->handler->doc_root));
-    insert(ht, "default_path", s->handler->default_path, sizeof(s->handler->default_path));
-    insert(ht, "keep_alive", s->handler->keep_alive, sizeof(s->handler->keep_alive));
+    insert(ht, "doc_root", s->handler->doc_root, strlen(s->handler->doc_root) + 1);
+    insert(ht, "default_path", s->handler->default_path, strlen(s->handler->default_path) + 1);
+    insert(ht, "keep_alive", &(s->handler->keep_alive), sizeof(s->handler->keep_alive));
     
-    insert(ht, "port_number", s->network->port_number, sizeof(s->network->port_number));
-    insert(ht, "ipv4_address", s->network->ipv4_address, sizeof(s->network->ipv4_address));
-    insert(ht, "backlog", s->network->backlog, sizeof(s->network->backlog));
-    insert(ht, "max_events", s->network->max_events, sizeof(s->network->max_events));
+    insert(ht, "port_number", &(s->network->port_number), sizeof(s->network->port_number));
+    insert(ht, "ipv4_address", s->network->ipv4_address, strlen(s->network->ipv4_address) + 1);
+    insert(ht, "backlog", &(s->network->backlog), sizeof(s->network->backlog));
+    insert(ht, "max_events", &(s->network->max_events), sizeof(s->network->max_events));
 
     return ht;
 }
@@ -71,6 +71,7 @@ static hashTable_t* init_hashtable(settings_t* s) {
 //Loads yaml into structures then passes structures to hash table init
 static hashTable_t* load_yaml(char* filepath) {
     const cyaml_config_t config = {
+        .log_level = CYAML_LOG_DEBUG,
         .log_fn = cyaml_log,
         .mem_fn = cyaml_mem,
         .log_level = CYAML_LOG_WARNING,
@@ -86,7 +87,7 @@ static hashTable_t* load_yaml(char* filepath) {
 
     hashTable_t* htable = init_hashtable(s);
 
-    //err = cyaml_free(&config, &schema, s, 0);
+    err = cyaml_free(&config, &schema, s, 0);
 
     if(err != CYAML_OK) {fprintf(stderr, "CYAML free error: %s\n", cyaml_strerror(err)); exit(EXIT_FAILURE);};
 
