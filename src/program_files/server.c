@@ -1,7 +1,6 @@
 #include "../headers/server.h"
 /*=======================================================================================
-| This program is a web server written in C, and a                            
-| front end Golang terminal interface. More details 
+| This program is a web server written in C. More details 
 | are below for this file:                          
 |
 | Functions:
@@ -13,10 +12,12 @@
 //signal check
 volatile sig_atomic_t stop;
 
+//TODO
 void make_daemon(void) {
     //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
 }
 
+//TODO
 bool parse_args(int* argc, char* argv[]) {
     if(*argc > 2) {
         printf("webserver: too many args\n");
@@ -40,6 +41,7 @@ void set_nonblocking(int sock) {
 }
 
 void main_event_loop(int epoll_fd, int server_soc) {
+    tpool_t* tp = tpool_create(MAX_POOL_SIZE);
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN];
     
@@ -80,18 +82,31 @@ void main_event_loop(int epoll_fd, int server_soc) {
                 }             
             }
             else {
+                active_requests++;
+
                 client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
 
-                getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len); //gets connected client info
+                if(!getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
+                    printf("Error receiving client info\n");
+                    exit(EXIT_FAILURE);
+                } //gets connected client info
 
                 request->client_socket = events[i].data.fd;
 
                 request->state = STATE_READ;
 
-                http_client_handler(request);
+                if(active_requests > THREAD_THRESHOLD) {
+                    tpool_add_work(tp, (thread_func_t)http_client_handler, request);
+                }
+                else {
+                    http_client_handler(request);
+                }
+
+                active_requests--;
             }
         }
     }
+    tpool_destroy(tp);
     printf("\nwebserver: exiting program...\n");
 }
 
