@@ -5,6 +5,7 @@ struct handler_settings {
     char doc_root[MAX_FILEPATH_SIZE];
     char default_path[MAX_FILEPATH_SIZE];
     unsigned short keep_alive;
+    //TODO, default timeout
 };
 
 typedef struct handler_settings handler_settings_t;

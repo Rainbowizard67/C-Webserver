@@ -6,7 +6,7 @@
 #include <stdbool.h> //standard boolean library
 #include <string.h> //standard string library
 #include <errno.h>
-#include <time.h>
+#include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -43,6 +43,7 @@ typedef struct client_request_t {
     char response[BUFSIZ];
     size_t response_len;
     size_t bytes_sent;
+    bool keep_alive;
 }client_request_t;
 
 //End State machine

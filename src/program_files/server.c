@@ -76,7 +76,7 @@ void main_event_loop(int epoll_fd, int server_soc) {
 
                 struct epoll_event ev;
                 ev.data.fd = client_soc;
-                ev.events = EPOLLIN | EPOLLET;
+                ev.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
 
                 if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, client_soc, &ev) < 0) {
                     perror("Error with with adding client socket to events: ");
@@ -89,13 +89,13 @@ void main_event_loop(int epoll_fd, int server_soc) {
 
                 client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
 
-                if(!getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
+                if(getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
                     printf("Error receiving client info\n");
+                    free(request);
                     exit(EXIT_FAILURE);
                 } //gets connected client info
 
                 request->client_socket = events[i].data.fd;
-
                 request->state = STATE_READ;
 
                 if(active_requests > THREAD_THRESHOLD) {
@@ -188,7 +188,7 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
 //Freeing settings data, multiplexing event (epoll), and server interface
 void clean_program(int ep_fd, int soc, hashTable_t* ht) {
-    free_settings(ht);
+    //free_settings(ht);
     
     close(soc);
     close(ep_fd);
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
 
     if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}
     
-    hashTable_t* ht = main_settings(argv[1]);
+    //hashTable_t* ht = main_settings(argv[1]);
     
     //Start server socket init (returns socket fd)
     char ip[INET_ADDRSTRLEN];

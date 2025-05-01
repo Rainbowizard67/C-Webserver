@@ -7,21 +7,31 @@ static void http_404_response(int soc);
 // end static function prototypes
 
 void http_client_handler(client_request_t* request) {
+    //timeout.tv_sec = 10;
+
+    size_t total_bytes_recv = 0;
+
     bool running = true;
     while(running) {
         switch(request->state) {
             case STATE_READ: {
-                int bytes_read = recv(request->client_socket, request->buffer, MAX_BUFFER_SIZE, 0);
+                size_t bytes_read = recv(request->client_socket, request->buffer, MAX_BUFFER_SIZE, 0);
                 if(bytes_read == -1) {
-                    perror("Error receiving client request: ");
-                    request->state = STATE_CLOSE;
+                    if(errno == EAGAIN || errno == EWOULDBLOCK) {
+                        return;
+                    }
+                    else {
+                        perror("Error receiving client request: ");
+                        request->state = STATE_CLOSE;
+                    }
                 }
                 else if(bytes_read == 0) {
                     printf("Client closed the connection\n");
                     request->state = STATE_CLOSE;
                 }
                 else {
-                    request->buffer[bytes_read] = '\0';
+                    total_bytes_recv += bytes_read;
+                    request->buffer[total_bytes_recv] = '\0';
                     printf("Received request:\n%s\n", request->buffer);
                     request->state = STATE_PARSE;
                 }
@@ -40,6 +50,7 @@ void http_client_handler(client_request_t* request) {
                 running = false;
                 break;
         }
+        //TODO, check for keep alive and inactivity(timeout)
     }
     
     close(request->client_socket);
