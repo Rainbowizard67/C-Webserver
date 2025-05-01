@@ -1,5 +1,6 @@
 #include "../headers/objPool.h"
 
+//Init pool with base capacity
 object_pool_t* create_pool(int cap) {
     object_pool_t* pool = (object_pool_t*)malloc(sizeof(object_pool_t));
     pool->size = 0;
@@ -10,8 +11,10 @@ object_pool_t* create_pool(int cap) {
     for(int i=0; i<cap; i++) {
         pool->available[i] = true;
     }
+    return pool;
 }
 
+//Resizes pool if it reaches general capacity 
 static void resize_pool(object_pool_t* pool) {
     pool->capacity += 2;
     pool->objects = realloc(pool->objects, sizeof(client_request_t) * pool->capacity);
@@ -22,6 +25,7 @@ static void resize_pool(object_pool_t* pool) {
     }
 }
 
+//Borrows an object to be used else where
 client_request_t* borrow_object(object_pool_t* pool) {
     if(pool->size == pool->capacity) {
         resize_pool(pool);
@@ -36,6 +40,7 @@ client_request_t* borrow_object(object_pool_t* pool) {
     return NULL;   
 }
 
+//Returns object back to the pool after using it
 void return_object(object_pool_t* pool, client_request_t* object) {
     int index = object - pool->objects;
     if(index >= 0 && index < pool->capacity) {
@@ -44,6 +49,7 @@ void return_object(object_pool_t* pool, client_request_t* object) {
     }
 }
 
+//Frees entire pool and objects
 void destroy_pool(object_pool_t* pool) {
     free(pool->objects);
     free(pool->available);

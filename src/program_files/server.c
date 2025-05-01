@@ -45,6 +45,7 @@ void set_nonblocking(int sock) {
 //Main listening loop and accepting loop for clients
 void main_event_loop(int epoll_fd, int server_soc) {
     tpool_t* tp = tpool_create(MAX_POOL_SIZE);
+    object_pool_t* op = create_pool(50);
     struct epoll_event events[MAX_EVENTS];
     char ip[INET_ADDRSTRLEN];
     
@@ -87,7 +88,9 @@ void main_event_loop(int epoll_fd, int server_soc) {
             else {
                 active_requests++;
 
-                client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
+                client_request_t* request = borrow_object(op);
+
+                //client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
 
                 if(getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
                     printf("Error receiving client info\n");
@@ -105,11 +108,14 @@ void main_event_loop(int epoll_fd, int server_soc) {
                     http_client_handler(request);
                 }
 
+                return_object(op, request);
+
                 active_requests--;
             }
         }
     }
     tpool_destroy(tp);
+    destroy_pool(op);
     printf("\nwebserver: exiting program...\n");
 }
 

@@ -16,7 +16,7 @@ OBJ := $(patsubst $(SRC_PATH)/%.c,$(OBJ_PATH)/%.o,$(SRC))
 
 # Shared library target
 LIBRARY := $(LD_LIBRARY_PATH)/libWeblib.so
-SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/threadpool.o $(OBJ_PATH)/settings.o $(OBJ_PATH)/fileLoader.o $(OBJ_PATH)/hashTable.o
+SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/threadpool.o $(OBJ_PATH)/settings.o $(OBJ_PATH)/fileLoader.o $(OBJ_PATH)/hashTable.o $(OBJ_PATH)/objPool.o
 
 # Main program target
 mainWebSrv: dirs $(OBJ_PATH) $(OBJ) $(LIBRARY)
