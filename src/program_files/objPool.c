@@ -1,0 +1,51 @@
+#include "../headers/objPool.h"
+
+object_pool_t* create_pool(int cap) {
+    object_pool_t* pool = (object_pool_t*)malloc(sizeof(object_pool_t));
+    pool->size = 0;
+    pool->capacity = cap;
+    pool->objects = (client_request_t*)malloc(sizeof(client_request_t) * cap);
+    pool->available = (int*)malloc(sizeof(int) * cap);
+
+    for(int i=0; i<cap; i++) {
+        pool->available[i] = true;
+    }
+}
+
+static void resize_pool(object_pool_t* pool) {
+    pool->capacity += 2;
+    pool->objects = realloc(pool->objects, sizeof(client_request_t) * pool->capacity);
+    pool->available = realloc(pool->available, sizeof(int) * pool->capacity);
+    
+    for(int i=pool->size; i<pool->capacity; i++) {
+        pool->available[i] = true;
+    }
+}
+
+client_request_t* borrow_object(object_pool_t* pool) {
+    if(pool->size == pool->capacity) {
+        resize_pool(pool);
+    }
+    for(int i=0; i<pool->capacity; i++) {
+        if(pool->available[i] == true) {
+            pool->available[i] = false;
+            pool->size++;
+            return &pool->objects[i];
+        }
+    }
+    return NULL;   
+}
+
+void return_object(object_pool_t* pool, client_request_t* object) {
+    int index = object - pool->objects;
+    if(index >= 0 && index < pool->capacity) {
+        pool->available[index] = true;
+        pool->size--;
+    }
+}
+
+void destroy_pool(object_pool_t* pool) {
+    free(pool->objects);
+    free(pool->available);
+    free(pool);
+}
