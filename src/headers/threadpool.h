@@ -6,7 +6,7 @@
 //Thread function to be passed, has void pointer for any data types
 typedef void (*thread_func_t)(void* arg);
 
-//structures
+//start structures
 
 //This is our singly linked list of thread functions for the queue
 typedef struct tpool_work tpool_work;

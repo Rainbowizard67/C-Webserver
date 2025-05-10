@@ -10,7 +10,6 @@
 //Start Macros, structures and global variables
 #define BACKLOG 25
 #define PORT 8080 //port number
-#define MAX_EVENTS 1024 //if you want to go higher change in /proc/sys/fs/file-max and set somaxconn
 #define MAX_POOL_SIZE 6
 #define THREAD_THRESHOLD 800
 

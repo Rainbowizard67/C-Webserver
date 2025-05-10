@@ -1,16 +1,24 @@
 #include "../headers/server.h"
-/*=======================================================================================
-| This program is a web server written in C. More details 
-| are below for this file:                          
-|
-| Functions:
-|
-|
+/*======================================================
+| This program is a web server written in C.  
+|         
 |
 ===================================================*/
 
 //signal check
 volatile sig_atomic_t stop;
+
+//Gets the fd system soft limit
+rlim_t get_fd_limit(void) {
+    struct rlimit limit;
+
+    if((getrlimit(RLIMIT_NOFILE, &limit) != 0)) {
+        perror("Error getting fd rlimit: ");
+        return 1024;
+    }
+
+    return (int)limit.rlim_cur;
+}
 
 //TODO
 void make_daemon(void) {
@@ -44,13 +52,20 @@ void set_nonblocking(int sock) {
 
 //Main listening loop and accepting loop for clients
 void main_event_loop(int epoll_fd, int server_soc) {
-    tpool_t* tp = tpool_create(MAX_POOL_SIZE);
     object_pool_t* op = create_pool(50);
-    struct epoll_event events[MAX_EVENTS];
+    tpool_t* tp = tpool_create(6);
+    int max_events = get_fd_limit();
+    
+    struct epoll_event* events = malloc(sizeof(struct epoll_event) * max_events);
+    if (!events) {
+        perror("malloc failed");
+        exit(EXIT_FAILURE);
+    }
+
     char ip[INET_ADDRSTRLEN];
     
     while(!stop) {
-        int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        int num_events = epoll_wait(epoll_fd, events, max_events, -1);
         
         if(num_events < 0) {
             if(errno == EINTR) {
@@ -90,8 +105,6 @@ void main_event_loop(int epoll_fd, int server_soc) {
 
                 client_request_t* request = borrow_object(op);
 
-                //client_request_t* request = (client_request_t*)malloc(sizeof(client_request_t));
-
                 if(getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
                     printf("Error receiving client info\n");
                     free(request);
@@ -101,8 +114,10 @@ void main_event_loop(int epoll_fd, int server_soc) {
                 request->client_socket = events[i].data.fd;
                 request->state = STATE_READ;
 
-                if(active_requests > THREAD_THRESHOLD) {
-                    tpool_add_work(tp, (thread_func_t)http_client_handler, request);
+                if(THREAD_THRESHOLD < active_requests) {
+                    if(!(tpool_add_work(tp, (void*)http_client_handler, (void*)request))) {
+                        continue;
+                    }
                 }
                 else {
                     http_client_handler(request);
@@ -114,8 +129,10 @@ void main_event_loop(int epoll_fd, int server_soc) {
             }
         }
     }
-    tpool_destroy(tp);
+    free(events);
     destroy_pool(op);
+    tpool_destroy(tp);
+    
     printf("\nwebserver: exiting program...\n");
 }
 
@@ -131,6 +148,7 @@ int set_epoll_events(struct epoll_event ev, int socServer) {
     ev.data.fd = socServer;
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, socServer, &ev) < 0) {
         perror("Error adding socket to epoll: ");
+        close(epoll_fd);
         exit(EXIT_FAILURE);
     }
 
@@ -154,8 +172,8 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
         exit(EXIT_FAILURE);
     }
 
-    //socket option to allow address reuse
-    int opt=1;
+    //socket option to allow address and port reuse
+    uint8_t opt = 1;
     setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
     //struct setup

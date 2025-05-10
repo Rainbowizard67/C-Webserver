@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <sys/un.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <ifaddrs.h>
@@ -18,6 +19,8 @@
 #include <signal.h>
 #include <unistd.h> //standard Unix OS library
 #include <pthread.h> //standard C thread library
+#include <semaphore.h>
+#include <sys/resource.h>
 
 #define MAX_BUFFER_SIZE 4096
 #define MAX_URL_SIZE 256

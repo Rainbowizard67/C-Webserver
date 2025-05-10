@@ -3,7 +3,7 @@
 
 #include "../headers/project_headers.h"
 #include "../headers/fileLoader.h"
-#include "../headers/hashTable.h"
+#include "../headers/cache.h"
 
 #define MAX_CACHE_SIZE 5
 #define MAX_METHOD_SIZE 10
