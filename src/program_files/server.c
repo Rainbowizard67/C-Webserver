@@ -21,11 +21,6 @@ rlim_t get_fd_limit(void) {
 }
 
 //TODO
-void make_daemon(void) {
-    //this function will not be created/worked on until handleClient, threads are implemented, settings is complete, YAML parser, etc.
-}
-
-//TODO
 bool parse_args(int* argc, char* argv[]) {
     if(*argc > 2) {
         printf("webserver: too many args\n");
