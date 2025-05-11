@@ -6,7 +6,7 @@ static int get_HTTP_request(int soc, char* URL);
 static void http_404_response(int soc);
 // end static function prototypes
 
-void http_client_handler(client_request_t* request) {
+void http_client_handler(client_connection_t* request) {
     //timeout.tv_sec = 10;
 
     size_t total_bytes_recv = 0;
@@ -52,7 +52,7 @@ void http_client_handler(client_request_t* request) {
         }
         //TODO, check for keep alive and inactivity(timeout)
     }
-    
+
     close(request->client_socket);
     free(request);
 }

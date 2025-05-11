@@ -103,27 +103,27 @@ void main_event_loop(int epoll_fd, int server_soc) {
             else {
                 active_requests++;
 
-                client_request_t* request = borrow_object(op);
+                client_connection_t* client_conn = borrow_object(op);
 
-                if(getpeername(events[i].data.fd, (struct sockaddr*)&request->client_addr, &request->client_len)) {
+                if(getpeername(events[i].data.fd, (struct sockaddr*)&client_conn->client_addr, &client_conn->client_len)) {
                     printf("Error receiving client info\n");
-                    free(request);
+                    free(client_conn);
                     exit(EXIT_FAILURE);
                 } //gets connected client info
 
-                request->client_socket = events[i].data.fd;
-                request->state = STATE_READ;
+                client_conn->client_socket = events[i].data.fd;
+                client_conn->state = STATE_READ;
 
                 if(THREAD_THRESHOLD < active_requests) {
-                    if(!(tpool_add_work(tp, (void*)http_client_handler, (void*)request))) {
+                    if(!(tpool_add_work(tp, (void*)http_client_handler, (void*)client_conn))) {
                         continue;
                     }
                 }
                 else {
-                    http_client_handler(request);
+                    http_client_handler(client_conn);
                 }
 
-                return_object(op, request);
+                return_object(op, client_conn);
 
                 active_requests--;
             }

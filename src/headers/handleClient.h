@@ -15,6 +15,6 @@ typedef struct parse_data {
     char method[MAX_METHOD_SIZE];
 }parse_data_t;
 
-void http_client_handler(client_request_t* client);
+void http_client_handler(client_connection_t* client);
 
 #endif

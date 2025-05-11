@@ -34,7 +34,7 @@ typedef enum conn_state_t {
     STATE_CLOSE
 }conn_state_t;
 
-typedef struct client_request_t {
+typedef struct client_connection_t {
     int client_socket;
     struct sockaddr_storage client_addr;
     socklen_t client_len;
@@ -47,7 +47,7 @@ typedef struct client_request_t {
     size_t response_len;
     size_t bytes_sent;
     bool keep_alive;
-}client_request_t;
+}client_connection_t;
 
 //End State machine
 

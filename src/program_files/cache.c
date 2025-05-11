@@ -75,7 +75,7 @@ void put(LRUCache_t* cache, char* key, char* value) {
     else {
         LRU_Node_t* newNode = create_lru_node(key, value);
         if(!newNode) return;
-        
+ 
         insert(cache->map, key, newNode->value, sizeof(newNode->value));
 
         newNode->next = cache->head;
