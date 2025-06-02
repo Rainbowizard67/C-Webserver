@@ -4,7 +4,7 @@
 #include "project_headers.h"
 
 typedef struct object_pool {
-    client_request_t* objects;
+    client_connection_t* objects;
     int size;
     int capacity;
     int* available;
@@ -12,8 +12,8 @@ typedef struct object_pool {
 
 //Start function prototypes
 object_pool_t* create_pool(int cap);
-client_request_t* borrow_object(object_pool_t* pool);
-void return_object(object_pool_t* pool, client_request_t* object);
+client_connection_t* borrow_object(object_pool_t* pool);
+void return_object(object_pool_t* pool, client_connection_t* object);
 void destroy_pool(object_pool_t* pool);
 //End function prototypes
 
