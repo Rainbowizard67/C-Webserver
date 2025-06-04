@@ -9,6 +9,8 @@ EXE_FINAL_PATH := $(shell pwd)/src/bin/
 EXE_NAME := webSrv
 OBJ_PATH := $(shell pwd)/src/objs
 SRC_PATH := $(shell pwd)/src/program_files
+SETUP_PATH := $(shell pwd)/config
+SETUP_SCRIPT := setup_script.sh
 
 # Source and object files
 SRC := $(wildcard $(SRC_PATH)/*.c)
@@ -22,6 +24,13 @@ SHARED_OBJS := $(OBJ_PATH)/cache.o $(OBJ_PATH)/handleClient.o $(OBJ_PATH)/thread
 mainWebSrv: dirs $(OBJ_PATH) $(OBJ) $(LIBRARY)
 	@$(CC) -g $(SRC_PATH)/server.c -o $(EXE_FINAL_PATH)$(EXE_NAME) -L$(LD_LIBRARY_PATH) -lWeblib -lcyaml -lpthread -Wl,--rpath=$(shell pwd)/src/shared_objects
 	@echo "Created executable, in the project bin directory"
+
+# Calling the setup bash script for the program
+setup:
+	@echo "Running dependency script for entire program and creating directories..."
+	@bash -e -c 'bash $(SETUP_PATH)/$(SETUP_SCRIPT)'
+	@make -s dirs
+	@echo "All dependencies and directories are setup"
 
 # Making the obj, shared_obj, and bin directories
 dirs:
@@ -46,6 +55,7 @@ debug: $(EXE_FINAL_PATH)$(EXE_NAME)
 	@echo "Running in debug mode..."
 	@gdb $(EXE_FINAL_PATH)$(EXE_NAME)
 
+# Runs the executable in memory check mode
 valgrind: $(EXE_FINAL_PATH)$(EXE_NAME)
 	@echo "Running in memory checker mode..."
 	@valgrind --track-origins=yes --leak-check=full --show-leak-kinds=all $(EXE_FINAL_PATH)$(EXE_NAME)

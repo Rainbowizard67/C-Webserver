@@ -1,4 +1,6 @@
 #!/bin/bash
 
-sudo apt install valgrind gdb build-essential make libyaml-dev libcyaml-dev -y
+sudo apt update
+
+sudo apt install valgrind gdb build-essential libyaml-dev libcyaml-dev -y
 
