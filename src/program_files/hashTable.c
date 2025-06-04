@@ -2,7 +2,10 @@
 
 //TODO, see what other hash_functions we can use and if we can dynamically choose which one we want to implement
 
-//Basic hash function to hash key values
+/*
+Hash static function that converts the key into hash value.
+Argument inputs are char* key and int size, return size_t.
+*/
 static size_t hash_function(char* key, int size) {
     size_t hash = 0;
     while(*key) {
@@ -11,7 +14,10 @@ static size_t hash_function(char* key, int size) {
     return hash % size;
 }
 
-//Creates main table
+/*
+Function that creates the main hash table.
+Argument input is int size, returns hashTable_t structure.
+*/
 hashTable_t* create_table(int size) {
     hashTable_t* tb = (hashTable_t*)malloc(sizeof(hashTable_t));
     if(!tb) return NULL;
@@ -25,7 +31,10 @@ hashTable_t* create_table(int size) {
     return tb;
 }
 
-//Creates node for insertion
+/*
+Static function that creates nodes for insert function.
+Argument inputs are char* key, void* val, and size_t val_size, returns LNode_t structure.
+*/
 static LNode_t* create_node(char* key, void* val, size_t val_size) {
     LNode_t* newNode = (LNode_t*)malloc(sizeof(LNode_t));
     if(!newNode) return NULL;
@@ -43,7 +52,10 @@ static LNode_t* create_node(char* key, void* val, size_t val_size) {
     return newNode;
 }
 
-//Inserts node into hashtable
+/*
+Function that inserts a node into the hashtable.
+Argument inputs are hashTable_t structure, char* key, void* val, and size_t val_size, returns void.
+*/
 void insert(hashTable_t* tb, char* key, void* val, size_t val_size) {
     size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
@@ -68,14 +80,20 @@ void insert(hashTable_t* tb, char* key, void* val, size_t val_size) {
     tb->buckets[index] = newNode;
 }
 
-//Frees the node and its dynamically allocated members
+/*
+Static function that frees the node and its dynamically allocated members.
+Argument input is LNode_t structure, returns void.
+*/
 static void free_node(LNode_t* node) {
     free(node->key);
     free(node->value);
     free(node);
 }
 
-//Deletes a key:value pair from the hashtable
+/*
+Function that deletes a key:value pair from the hashtable.
+Argument inputs are hashTable_t structure and char* key, returns void.
+*/
 void del(hashTable_t* tb, char* key) {
     size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
@@ -97,7 +115,10 @@ void del(hashTable_t* tb, char* key) {
     }
 }
 
-//Searches and returns value based on the key
+/*
+Function that searches and returns value based on the key.
+Argument inputs are hashTable_t structure and char* key, returns void pointer.
+*/
 void* search(hashTable_t* tb, char* key) {
     size_t index = hash_function(key, tb->capacity);
     LNode_t* node = tb->buckets[index];
@@ -110,7 +131,10 @@ void* search(hashTable_t* tb, char* key) {
     return NULL;
 }
 
-//Frees all nodes and outer hashtable
+/*
+Function that frees all nodes and hashtable structure.
+Argument input is hashTable_t structure, returns void.
+*/
 void free_table(hashTable_t* tb) {
     for(int i=0; i<tb->capacity; i++) {
         LNode_t* node = tb->buckets[i];

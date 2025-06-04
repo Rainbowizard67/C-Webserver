@@ -5,7 +5,7 @@
 #include <sys/stat.h>
 
 //struct
-typedef struct file_data {
+typedef struct file_data_t {
     int size;
     void* data;
 }file_data_t;

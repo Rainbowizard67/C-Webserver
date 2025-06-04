@@ -1,6 +1,9 @@
 #include "../headers/cache.h"
 
-//creates node for cache
+/*
+Static function creates node for cache.
+Argument input is char* key and char* val, returns LRU_Node_t structure.
+*/
 static LRU_Node_t* create_lru_node(char* key, char* val) {
     LRU_Node_t* node = (LRU_Node_t*)malloc(sizeof(LRU_Node_t));
     if(!node) return NULL;
@@ -11,7 +14,10 @@ static LRU_Node_t* create_lru_node(char* key, char* val) {
     return node;
 }
 
-//creates LRU Cache
+/*
+Function that creates the LRU cache.
+Argument input is int cap, returns LRUCache_t structure.
+*/
 LRUCache_t* init_cache(int cap) {
     LRUCache_t* cache = (LRUCache_t*)malloc(sizeof(LRUCache_t));
     if(!cache) return NULL;
@@ -25,7 +31,10 @@ LRUCache_t* init_cache(int cap) {
     return cache;
 }
 
-//moves node to the front of the node (most recently used)
+/*
+Static function that moves node to the front of the node (most recently used).
+Argument inputs are LRUCache_t structure and LRU_Node_t structure, returns void.
+*/
 static void move_front(LRUCache_t* cache, LRU_Node_t* node) {
     if(cache->head == node) return;
 
@@ -41,7 +50,10 @@ static void move_front(LRUCache_t* cache, LRU_Node_t* node) {
     if(!cache->tail) cache->tail = node;
 }
 
-//removing the least recently used node
+/*
+Static function that removes the least recently used node.
+Argument input is LRUCache_t structure, returns void.
+*/
 static void evict_lru(LRUCache_t* cache) {
     if(!cache->tail) return;
 
@@ -63,7 +75,10 @@ static void evict_lru(LRUCache_t* cache) {
     cache->size--;
 }
 
-//inserts a key-value pair into the LRU cache
+/*
+Function that inserts a key-value pair into the LRU cache.
+Argument inputs are LRUCache_t structure, char* key, and char* value, returns void.
+*/
 void put(LRUCache_t* cache, char* key, char* value) {
     LRU_Node_t* node = (LRU_Node_t*)search(cache->map, key);
 
@@ -92,7 +107,10 @@ void put(LRUCache_t* cache, char* key, char* value) {
     }
 }
 
-//gets a value from the cache
+/*
+Function that gets a value from the cache.
+Argument inputs are LRUCache_t structure and char* key, returns char pointer.
+*/
 char* get(LRUCache_t* cache, char* key) {
     LRU_Node_t* node = (LRU_Node_t*)search(cache->map, key);
     if(!node) return NULL;
@@ -101,7 +119,10 @@ char* get(LRUCache_t* cache, char* key) {
     return node->value;
 }
 
-//Freeing the LRU cache from memory
+/*
+Function that frees the LRU cache from memory.
+Argument input is LRUCache_t structure, returns void.
+*/
 void free_LRU_cache(LRUCache_t* cache) {
     LRU_Node_t* current = cache->head;
     while(current) {

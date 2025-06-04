@@ -1,6 +1,9 @@
 #include "../headers/objPool.h"
 
-//Init pool with base capacity
+/*
+Function that inits the pool with the base capacity.
+Argument input is int cap, returns object_pool_t structure.
+*/
 object_pool_t* create_pool(int cap) {
     object_pool_t* pool = (object_pool_t*)malloc(sizeof(object_pool_t));
     pool->size = 0;
@@ -14,7 +17,11 @@ object_pool_t* create_pool(int cap) {
     return pool;
 }
 
-//Resizes pool if it reaches general capacity 
+
+/*
+Static function that resizes the pool if it reaches general capacity.
+Argument input is object_pool_t structure, returns void.
+*/
 static void resize_pool(object_pool_t* pool) {
     int new_capacity = pool->capacity + 2;
     pool->objects = realloc(pool->objects, sizeof(client_connection_t) * new_capacity);
@@ -25,7 +32,10 @@ static void resize_pool(object_pool_t* pool) {
     }
 }
 
-//Borrows an object to be used else where
+/*
+Function that borrows an object to be used else where.
+Argument input is object_pool_t structure, returns client_connection_t structure.
+*/
 client_connection_t* borrow_object(object_pool_t* pool) {
     if(pool->size == pool->capacity) {
         resize_pool(pool);
@@ -40,7 +50,10 @@ client_connection_t* borrow_object(object_pool_t* pool) {
     return NULL;   
 }
 
-//Returns object back to the pool after using it
+/*
+Function that returns an object back to the memory pool after using.
+Argument inputs are object_pool_t structure and client_connection_t structure, returns void.
+*/
 void return_object(object_pool_t* pool, client_connection_t* object) {
     int index = object - pool->objects;
     if(index >= 0 && index < pool->capacity) {
@@ -49,7 +62,10 @@ void return_object(object_pool_t* pool, client_connection_t* object) {
     }
 }
 
-//Frees entire pool and objects
+/*
+Function that frees the entire memory pool and objects.
+Argument input is object_pool_t structure, return void.
+*/
 void destroy_pool(object_pool_t* pool) {
     free(pool->objects);
     free(pool->available);

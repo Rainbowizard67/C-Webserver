@@ -1,5 +1,8 @@
 #include "../headers/fileLoader.h"
-
+/*
+This function loads the file data into memory for use.
+Input argument is a char* pointer filename, returns file_data_t structure.
+*/
 file_data_t* file_load(char* filename) {
     char* buffer, *ptr;
 
@@ -49,6 +52,10 @@ file_data_t* file_load(char* filename) {
     return filedata;    
 }
 
+/*
+This function frees the file_data_t structure from memory.
+Input argument is the file_data_t structure, returns void.
+*/
 void file_free(file_data_t* filedata) {
     free(filedata->data);
     free(filedata);

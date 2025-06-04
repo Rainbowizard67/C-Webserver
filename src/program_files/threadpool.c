@@ -1,6 +1,9 @@
 #include "../headers/threadpool.h"
 
-//function for creating work node and adding to the linked list
+/*
+This static function is for creating a work node and adding to the linked list.
+The arguments are thread_funt_t structure function and void pointer arg, returns tpool_work_t structure.
+*/
 static tpool_work_t* tpool_work_create(thread_func_t func, void* arg) {
     tpool_work_t* work;
 
@@ -16,7 +19,10 @@ static tpool_work_t* tpool_work_create(thread_func_t func, void* arg) {
     return work;
 }
 
-//function for freeing work node from the linked list
+/*
+This static function is for freeing a work node from the tpool linked list.
+The argument is tpool_work_t structure, returns void.
+*/
 static void tpool_work_destroy(tpool_work_t* work) {
     if(work==NULL) {
         return;
@@ -24,7 +30,10 @@ static void tpool_work_destroy(tpool_work_t* work) {
     free(work);
 }
 
-//function for returning specific work objects from the list
+/*
+This static function is for returning specific work objects from the list.
+The argument is tpool_t structure, returns tpool_work_t structure.
+*/
 static tpool_work_t* tpool_work_get(tpool_t* tm) {
     tpool_work_t* work;
 
@@ -48,7 +57,10 @@ static tpool_work_t* tpool_work_get(tpool_t* tm) {
     return work;
 }
 
-//main worker function that waits for work
+/*
+Main worker static function that waits for work for the pool and the actual worker.
+The argument is void pointer arg, returns a void pointer.
+*/
 static void* tpool_worker(void* arg) {
     tpool_t* tm = arg;
     tpool_work_t* work;
@@ -84,7 +96,10 @@ static void* tpool_worker(void* arg) {
     return NULL;
 }
 
-//function to create the entire thread pool
+/*
+This function is to create the entire thread pool.
+The argument is size_t arg, return tpool_t structure.
+*/
 tpool_t* tpool_create(size_t num) {
     if(num > 15) {
         return NULL;
@@ -115,7 +130,10 @@ tpool_t* tpool_create(size_t num) {
     return tm;
 }
 
-//function to destroy the thread pool
+/*
+This function is to destroy the thread pool.
+The argument is tpool_t structure, returns void.
+*/
 void tpool_destroy(tpool_t* tm) {
     tpool_work_t* work;
     tpool_work_t* work2;
@@ -145,7 +163,10 @@ void tpool_destroy(tpool_t* tm) {
     free(tm);
 }
 
-//function to add work to the thread pool 
+/*
+This function is to add work to tpool.
+The arguments are tpool_t structure, thread_func_t function structure, and
+*/
 bool tpool_add_work(tpool_t* tm, thread_func_t func, void* arg) {
     tpool_work_t* work;
 
@@ -174,7 +195,10 @@ bool tpool_add_work(tpool_t* tm, thread_func_t func, void* arg) {
     return true;
 }
 
-//blocking function that will return when there is no work
+/*
+Blocking function that will return when there is no work.
+The argument is tpool_t structure, returns void.
+*/
 void tpool_wait(tpool_t* tm) {
     if(tm==NULL) {
         return;
