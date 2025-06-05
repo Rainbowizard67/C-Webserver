@@ -158,6 +158,7 @@ static int get_HTTP_request(int soc, char* URL) {
     char* get_file = NULL;
     const char* default_path = "/home/alexrob67/C-Webserver/src/web_pages/example.html";
 
+    //If the default_path or path in just does not exist we must send a 404
     if((strcmp(URL, "/")) == 0) {
         get_file = strdup(default_path);
     }
