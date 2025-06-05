@@ -100,6 +100,13 @@ void main_event_loop(int epoll_fd, int server_soc) {
 
                 client_connection_t* client_conn = borrow_object(op);
 
+                if(client_conn == NULL) {
+                    fprintf(stderr, "Failed to allocate client conn\n");
+                    exit(EXIT_FAILURE);
+                }
+
+                client_conn->client_len = sizeof(client_conn->client_addr);
+
                 if(getpeername(events[i].data.fd, (struct sockaddr*)&client_conn->client_addr, &client_conn->client_len)) {
                     printf("Error receiving client info\n");
                     free(client_conn);
@@ -169,7 +176,10 @@ int set_server_interface(char* ipAdd, socklen_t addrlen) {
 
     //socket option to allow address and port reuse
     uint8_t opt = 1;
-    setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if(setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+	perror("setsockopt error\n");
+	exit(EXIT_FAILURE);
+    }
 
     //struct setup
     memset(&serverAdd, 0, addrlen); //sets the struct in memory all to the value of zero

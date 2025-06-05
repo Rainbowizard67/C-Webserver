@@ -3,6 +3,7 @@ Currently this server only supports HTTP 1.1 and should not be used in a product
 is for testing and enthusiasts off network programming.
 
 Current program components:
+    -Server
     
 
 List of dependencies:

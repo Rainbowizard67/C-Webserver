@@ -23,13 +23,17 @@ Static function that resizes the pool if it reaches general capacity.
 Argument input is object_pool_t structure, returns void.
 */
 static void resize_pool(object_pool_t* pool) {
-    int new_capacity = pool->capacity + 2;
+    int old_capacity = pool->capacity;  
+    int new_capacity = old_capacity + 2;
+
     pool->objects = realloc(pool->objects, sizeof(client_connection_t) * new_capacity);
     pool->available = realloc(pool->available, sizeof(int) * new_capacity);
     
-    for(int i=pool->size; i<pool->capacity; i++) {
+    for(int i=old_capacity; i<pool->capacity; i++) {
         pool->available[i] = true;
     }
+
+    pool->capacity = new_capacity;
 }
 
 /*
@@ -44,7 +48,9 @@ client_connection_t* borrow_object(object_pool_t* pool) {
         if(pool->available[i] == true) {
             pool->available[i] = false;
             pool->size++;
-            return &pool->objects[i];
+            client_connection_t* obj = &pool->objects[i];
+            memset(obj, 0, sizeof(client_connection_t));
+            return obj;
         }
     }
     return NULL;   
