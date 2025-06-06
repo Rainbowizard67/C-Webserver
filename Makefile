@@ -17,7 +17,7 @@ SETUP_SCRIPT := setup_script.sh
 
 # Source and object files
 UTILS_SRC := $(wildcard $(SRC_UTILS_PATH)/*.c)
-SERVER_SRC := $(SRC_SERVER_PATH)/handleClient.c $(SRC_SERVER_PATH)/settings.c
+SERVER_SRC := $(SRC_SERVER_PATH)/handleClient.c
 
 # Shared source files and objects
 SHARED_SRC := $(UTILS_SRC) $(SERVER_SRC)
