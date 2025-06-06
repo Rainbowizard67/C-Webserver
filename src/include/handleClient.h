@@ -10,6 +10,9 @@
 
 struct timeval timeout;
 
+char* d_web_path;
+char* d_config_path;
+
 typedef struct parse_data {
     bool check;
     char method[MAX_METHOD_SIZE];

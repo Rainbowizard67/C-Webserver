@@ -5,7 +5,7 @@
 
 #define MAX_PATH 4096
 
-char* get_working_dir(void);
 char* get_default_web_path(void);
+char* get_default_config_path(void);
 
 #endif

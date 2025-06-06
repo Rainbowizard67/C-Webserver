@@ -5,6 +5,14 @@
 |
 ===================================================*/
 
+__attribute__((constructor))
+static void init_defaults(void) {
+    d_web_path = get_default_web_path();
+    printf("%s", d_web_path);
+    d_config_path = get_default_config_path();
+    printf("%s", d_config_path);
+}
+
 //signal check
 volatile sig_atomic_t stop;
 

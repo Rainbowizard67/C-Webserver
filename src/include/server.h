@@ -6,6 +6,7 @@
 #include "project_headers.h"
 #include "threadpool.h"
 #include "objPool.h"
+#include "defaults.h"
 
 //Start Macros, structures and global variables
 #define BACKLOG 25
