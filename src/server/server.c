@@ -8,9 +8,12 @@
 __attribute__((constructor))
 static void init_defaults(void) {
     d_web_path = get_default_web_path();
-    printf("%s", d_web_path);
     d_config_path = get_default_config_path();
-    printf("%s", d_config_path);
+
+    if(!d_web_path || !d_config_path) {
+        printf("Error setting default paths.\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 //signal check
@@ -229,6 +232,8 @@ void clean_program(int ep_fd, int soc, hashTable_t* ht) {
     
     close(soc);
     close(ep_fd);
+    free(d_config_path);
+    free(d_web_path);
 }
 
 //Main function
