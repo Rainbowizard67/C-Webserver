@@ -1,8 +1,8 @@
 #include "../include/server.h"
-/*======================================================
-| This program is a web server written in C.  
-|         
-|
+/*===================================================
+| This program is a web server written in C.        |
+| Servers static web pages, this is simple project  |
+| do not run a production environment.              |
 ===================================================*/
 
 __attribute__((constructor))

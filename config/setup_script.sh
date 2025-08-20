@@ -8,6 +8,5 @@ ENV_FILE=".env"
 
 cat > "$ENV_FILE" <<EOL
 
-
 EOL
 
