@@ -5,6 +5,7 @@
 | do not run a production environment.              |
 ===================================================*/
 
+
 __attribute__((constructor))
 static void init_defaults(void) {
     d_web_path = get_default_web_path();

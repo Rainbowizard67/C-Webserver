@@ -1,4 +1,4 @@
-# gitignore
+###gitignore###
 
 # executable name
 webSrv
@@ -8,6 +8,5 @@ webSrv
 *.so
 # vscode settings
 *.vscode
-
 # environment variables file
 *.env
