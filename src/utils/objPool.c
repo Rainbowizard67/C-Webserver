@@ -1,4 +1,4 @@
-#include "../include/objPool.h"
+#include "../include/scurry_utils.h"
 
 /*
 Function that inits the pool with the base capacity.

@@ -1,4 +1,4 @@
-#include "../include/cache.h"
+#include "../include/scurry_utils.h"
 
 /*
 Static function creates node for cache.

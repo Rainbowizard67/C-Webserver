@@ -1,4 +1,4 @@
-#include "../include/hashTable.h"
+#include "../include/scurry_utils.h"
 
 //TODO, see what other hash_functions we can use and if we can dynamically choose which one we want to implement
 

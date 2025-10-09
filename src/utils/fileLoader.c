@@ -1,4 +1,4 @@
-#include "../include/fileLoader.h"
+#include "../include/scurry_utils.h"
 
 /*
 This function loads the file data into memory for use.

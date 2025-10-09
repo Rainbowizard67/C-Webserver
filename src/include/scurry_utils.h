@@ -1,4 +1,4 @@
-#ifdef SCURRY_UTILS_H
+#ifndef SCURRY_UTILS_H
 #define SCURRY_UTILS_H
 
 #include "project_headers.h"
