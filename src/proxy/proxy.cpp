@@ -11,7 +11,12 @@ namespace ScurryProxy {
         void StartEventLoop(int epoll_fd, int server_soc) {
 
         }
-            
+    
+    private:
+        void set_nonblocking(int sock) {
+            int flags = fcntl(sock, F_GETFL, 0);
+            fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+        }          
 
 
     }
