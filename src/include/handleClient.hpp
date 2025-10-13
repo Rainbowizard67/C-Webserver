@@ -2,8 +2,7 @@
 #define PREPROCESS_HANDLECLIENT_HPP
 
 #include "project_headers.h"
-#include "fileLoader.h"
-#include "cache.h"
+#include "scurry_utils.h"
 
 #define MAX_CACHE_SIZE 5
 #define MAX_METHOD_SIZE 10

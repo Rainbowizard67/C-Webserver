@@ -1,46 +1,9 @@
 #include "../include/server.h"
-/*===================================================
-| This program is a web server written in C.        |
-| Servers static web pages, this is simple project  |
-| do not run a production environment.              |
-===================================================*/
+/*========================================================
+| This portion is a web server written in C. Servers     |
+| static web pages and then sends them through the proxy |
+=========================================================*/
 
-
-__attribute__((constructor))
-
-//signal check
-volatile sig_atomic_t stop;
-
-//Gets the fd system soft limit
-rlim_t get_fd_limit(void) {
-    struct rlimit limit;
-
-    if((getrlimit(RLIMIT_NOFILE, &limit) != 0)) {
-        perror("Error getting fd rlimit: ");
-        return 1024;
-    }
-
-    return (int)limit.rlim_cur;
-}
-
-//TODO
-bool parse_args(int* argc, char* argv[]) {
-    if(*argc > 2) {
-        printf("webserver: too many args\n");
-        return false;
-    }
-    /*if(sizeof(argv[1]) > MAX_FILEPATH_SIZE) {
-        printf("webserver: over max string size\n");
-        return false;
-    }*/
-    
-    return true;
-}
-
-//Handling Ctrl+C (stopping the server in the terminal)
-void handle_sigint(int sig) {
-    stop = 1;
-}
 
 //Sets the socket to nonblocking mode so that the program does not pause during I/O
 void set_nonblocking(int sock) {
@@ -224,36 +187,5 @@ void clean_program(int ep_fd, int soc, hashTable_t* ht) {
     
     close(soc);
     close(ep_fd);
-    free(d_config_path);
-    free(d_web_path);
 }
 
-//Main function
-int main(int argc, char *argv[]) {
-
-    signal(SIGINT, handle_sigint);
-
-    if(!(parse_args(&argc, argv))) {exit(EXIT_FAILURE);}
-    
-    //hashTable_t* ht = main_settings(argv[1]);
-    
-    //Start server socket init (returns socket fd)
-    char ip[INET_ADDRSTRLEN];
-    socklen_t addrlen;    
-    int socServer = set_server_interface(ip, addrlen);
-    //End server socket init
-
-    //Start Epoll events init
-    struct epoll_event ev;
-    int epoll_fd = set_epoll_events(ev, socServer);
-    //End Epoll events init
-
-    //Start main program
-    main_event_loop(epoll_fd, socServer);
-
-    clean_program(epoll_fd, socServer, NULL);
-    //End main program
-
-    printf("bye");
-    return 0;
-}

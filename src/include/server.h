@@ -4,7 +4,6 @@
 #include "settings.h"
 #include "scurry_utils.h"
 #include "project_headers.h"
-#include "defaults.h"
 
 //Start Macros, structures and global variables
 #define BACKLOG 25
