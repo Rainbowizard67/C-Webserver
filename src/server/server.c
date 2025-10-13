@@ -7,15 +7,6 @@
 
 
 __attribute__((constructor))
-static void init_defaults(void) {
-    d_web_path = get_default_web_path();
-    d_config_path = get_default_config_path();
-
-    if(!d_web_path || !d_config_path) {
-        printf("Error setting default paths.\n");
-        exit(EXIT_FAILURE);
-    }
-}
 
 //signal check
 volatile sig_atomic_t stop;

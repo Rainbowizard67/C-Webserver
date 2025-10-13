@@ -2,10 +2,8 @@
 #define PREPROCESS_NETWORK
 
 #include "settings.h"
-#include "handleClient.h"
+#include "scurry_utils.h"
 #include "project_headers.h"
-#include "threadpool.h"
-#include "objPool.h"
 #include "defaults.h"
 
 //Start Macros, structures and global variables

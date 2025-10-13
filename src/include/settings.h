@@ -2,7 +2,7 @@
 #define NETDATA_H
 
 #include <cyaml/cyaml.h>
-#include "hashTable.h"
+#include "scurry_utils.h"
 #include "project_headers.h"
 
 #define MAX_FILEPATH_SIZE 256
