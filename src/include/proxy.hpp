@@ -6,6 +6,7 @@
 #include <iostream>
 #include <string>
 
+#define BACKLOG 30
 
 namespace ScurryProxy {
     

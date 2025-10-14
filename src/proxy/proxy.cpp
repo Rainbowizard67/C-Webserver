@@ -4,19 +4,84 @@ namespace ScurryProxy {
     
     class ProxyEventLoop {
     public:
-        ProxyEventLoop() {
+        int epoll_fd;
+        int server_soc;
+
+
+        ProxyEventLoop(char* ipAdd, socklen_t addrlen, uint16_t port) {
+            int socServ;
+
+            sockaddr_in serverAdd; //struct for server socket interface
+
+            addrlen = sizeof(serverAdd);
+
+            //socket(int domain, int type, int protocol)
+            socServ = socket(AF_INET, SOCK_STREAM, 0);
+
+            if (socServ < 0) {
+                close(socServ);
+                perror("Error creating socket FD: ");
+                exit(EXIT_FAILURE);
+            }
+
+            //socket option to allow address and port reuse
+            int opt = 1;
+            if(setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+                perror("setsockopt error");
+                exit(EXIT_FAILURE);
+            }
+
+            //struct setup
+            memset(&serverAdd, 0, addrlen); //sets the struct in memory all to the value of zero
+            serverAdd.sin_family = AF_INET; //sets the address family
+            serverAdd.sin_port = htons(port); //htons converts the int to network byte order (from the 8080 to the actual port)
+            //serverAdd.sin_addr.s_addr = INADDR_ANY; //sets the address to any so before you actually input the real address it is assigned a zeroed input
+
+            //local Ipv4 used to bind for the server socket (will add a call for settings later)
+            strcpy(ipAdd, "127.0.0.1");
+
+            if(inet_pton(AF_INET, ipAdd, &serverAdd.sin_addr) <= 0) { //converts the text rep of Ipv4 address to the binary form, it is then stored in the serverAdd struct
+                close(socServ);
+                perror("Error storing or translating address: ");
+                exit(EXIT_FAILURE);
+            } //inet_pton(addressFamily, src, networkAddrStruct);
+
+            if(bind(socServ, (struct sockaddr *)&serverAdd, addrlen) < 0) { //binds the ip address to the socket so that they are synonymous
+                close(socServ);
+                perror("Error binding server address to socket: ");
+                exit(EXIT_FAILURE);
+            } //bind(socketfd, addr, addrlen);
+
+            if (listen(socServ, BACKLOG) < 0) { //listens for the client socket
+                close(socServ);
+                perror("Error listening on server socket: ");
+                exit(EXIT_FAILURE);
+            } //listen(socketfd, backlog);
+
+            set_nonblocking(socServ);
+
+            printf("webserver: Waiting for connections on port %d and address %s\n", port, ipAdd);
+
+            this->server_soc = socServ;
+        }
+
+        int StartEventLoop(int epoll_fd, int server_soc) {
 
         }
 
-        void StartEventLoop(int epoll_fd, int server_soc) {
+        ~ProxyEventLoop() {
 
         }
+
+        
     
     private:
         void set_nonblocking(int sock) {
             int flags = fcntl(sock, F_GETFL, 0);
             fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-        }          
+        }
+        
+        
 
 
     }

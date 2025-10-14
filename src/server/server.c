@@ -4,13 +4,6 @@
 | static web pages and then sends them through the proxy |
 =========================================================*/
 
-
-//Sets the socket to nonblocking mode so that the program does not pause during I/O
-void set_nonblocking(int sock) {
-    int flags = fcntl(sock, F_GETFL, 0);
-    fcntl(sock, F_SETFL, flags | O_NONBLOCK);
-}
-
 //Main listening loop and accepting loop for clients
 void main_event_loop(int epoll_fd, int server_soc) {
     object_pool_t* op = create_pool(50);
