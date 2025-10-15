@@ -9,24 +9,23 @@ namespace ScurryProxy {
 
 
         ProxyEventLoop(char* ipAdd, socklen_t addrlen, uint16_t port) {
-            int socServ;
+            int soc_serv;
 
-            sockaddr_in serverAdd; //struct for server socket interface
+            sockaddr_in server_addr; //struct for server socket interface
 
-            addrlen = sizeof(serverAdd);
+            addrlen = sizeof(server_addr);
 
-            //socket(int domain, int type, int protocol)
-            socServ = socket(AF_INET, SOCK_STREAM, 0);
+            soc_serv = socket(AF_INET, SOCK_STREAM, 0);
 
-            if (socServ < 0) {
-                close(socServ);
+            if (soc_serv < 0) {
+                close(soc_serv);
                 perror("Error creating socket FD: ");
                 exit(EXIT_FAILURE);
             }
 
             //socket option to allow address and port reuse
             int opt = 1;
-            if(setsockopt(socServ, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+            if(setsockopt(soc_serv, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
                 perror("setsockopt error");
                 exit(EXIT_FAILURE);
             }
@@ -58,7 +57,7 @@ namespace ScurryProxy {
                 exit(EXIT_FAILURE);
             } //listen(socketfd, backlog);
 
-            set_nonblocking(socServ);
+            this->set_nonblocking(soc_serv);
 
             printf("webserver: Waiting for connections on port %d and address %s\n", port, ipAdd);
 
@@ -79,6 +78,10 @@ namespace ScurryProxy {
         void set_nonblocking(int sock) {
             int flags = fcntl(sock, F_GETFL, 0);
             fcntl(sock, F_SETFL, flags | O_NONBLOCK);
+        }
+
+        int CreateServerSocketInterface() {
+            
         }
         
         
